@@ -6,6 +6,7 @@ class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
         self.floater = FloatingWindow(self)
+        self.withdraw()
 
 
 class FloatingWindow(tk.Toplevel):
