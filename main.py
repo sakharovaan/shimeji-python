@@ -1,45 +1,74 @@
-from kivy.config import Config
-Config.set('graphics', 'shaped', 1)
-
-from kivy.app import App
-from kivy.uix.boxlayout import BoxLayout
-from kivy.core.window import Window
-from kivy.clock import Clock
-from kivy.resources import resource_find
-from kivy.properties import StringProperty
-from KivyOnTop import register_topmost
-
-TITLE = 'Shimeji'
+import tkinter as tk
+from PIL import Image, ImageTk
 
 
-class ShimejiGame(BoxLayout):
-    def __init__(self, **kwargs):
-        super(ShimejiGame, self).__init__()
-        # Photo can be reference by running the photo function once:
-        Clock.schedule_interval(self.update, 0.06)
-
-    def update(self, dt):
-        # Replace the given image source value:
-        self.ids.catraView.source = resource_find('static/catra.png')
+class App(tk.Tk):
+    def __init__(self):
+        tk.Tk.__init__(self)
+        self.floater = FloatingWindow(self)
 
 
-class ShimejiApp(App):
-    def on_start(self):
-        Clock.schedule_once(self.set_shape)
+class FloatingWindow(tk.Toplevel):
+    def __init__(self, *args, **kwargs):
+        tk.Toplevel.__init__(self, *args, **kwargs)
+        self.app = args[0]
+        self.overrideredirect(True)
+        self.geometry("+450+450")
+        self.wm_attributes("-topmost", True)
+        self.wm_attributes("-transparentcolor", "brown")
 
-    def set_shape(self, *args):
-        Window.shape_image = resource_find('static/catra.png')
-        Window.shape_mode = 'binalpha'
+        # self.label = tk.Label(self, text="Click on the grip to move")
+        # self.grip = tk.Label(self, bitmap="gray25")
+        # self.grip.pack(side="left", fill="y")
+        # self.label.pack(side="right", fill="both", expand=True)
+
+        self.image = ImageTk.PhotoImage(self.RBGAImage('static/catra.png').resize((450, 450)))
+        self.grip = tk.Label(self, image=self.image, bg="brown")
+        self.grip.pack()
+
+        self.menu = tk.Menu(self, tearoff=0)
+        self.menu.add_command(label="Cut", command=lambda: self.menu_callback("1"))
+        self.menu.add_command(label="Copy", command=lambda: self.menu_callback("2"))
+        self.menu.add_command(label="Paste", command=lambda: self.menu_callback("3"))
+        self.menu.add_command(label="Reload", command=lambda: self.menu_callback("4"))
+        self.menu.add_checkbutton(label="add_checkbutton")
+        self.menu.add_separator()
+        self.menu.add_command(label="Exit", command=lambda: self.menu_callback("exit"))
+
+        self.grip.bind("<ButtonPress-1>", self.left_press)
+        self.grip.bind("<ButtonPress-3>", self.right_press)
+        self.grip.bind("<ButtonRelease-1>", self.left_release)
+        self.grip.bind("<B1-Motion>", self.do_move)
+
+    @staticmethod
+    def RBGAImage(path):
+        return Image.open(path).convert("RGBA")
+
+    def left_press(self, event):
+        self.x = event.x
+        self.y = event.y
+
+    def right_press(self, event):
+        try:
+            self.menu.tk_popup(event.x_root, event.y_root)
+        finally:
+            self.menu.grab_release()
+
+    def menu_callback(self, element):
+        if element == "exit":
+            self.app.destroy()
+
+    def left_release(self, event):
+        self.x = None
+        self.y = None
+
+    def do_move(self, event):
+        deltax = event.x - self.x
+        deltay = event.y - self.y
+        x = self.winfo_x() + deltax
+        y = self.winfo_y() + deltay
+        self.geometry(f"+{x}+{y}")
 
 
-    def build(self):
-        Window.set_title(TITLE)
-        Window.size = 410, 410
-        Window.borderless = '1'
-        register_topmost(Window, TITLE)
-
-        return ShimejiGame()
-
-
-if __name__ == '__main__':
-    ShimejiApp().run()
+app=App()
+app.mainloop()
