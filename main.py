@@ -17,14 +17,29 @@ class FloatingWindow(tk.Toplevel):
         self.geometry("+450+450")
         self.wm_attributes("-topmost", True)
         self.wm_attributes("-transparentcolor", "brown")
+        self.app.after(0, self.animate)
 
         # self.label = tk.Label(self, text="Click on the grip to move")
         # self.grip = tk.Label(self, bitmap="gray25")
         # self.grip.pack(side="left", fill="y")
         # self.label.pack(side="right", fill="both", expand=True)
 
-        self.image = ImageTk.PhotoImage(self.RBGAImage('static/catra.png').resize((450, 450)))
-        self.grip = tk.Label(self, image=self.image, bg="brown")
+        im1 = self.RBGAImage('static/ghost/L01,R1,C1,background,hidden,normal,255.png').resize((450, 450))
+        im2 = self.RBGAImage('static/ghost/L17,R1,C1,mouth_cat,hidden,normal,255.png').resize((450, 450))
+        im3 = self.RBGAImage('static/ghost/L04,R1,C1,eyebrows_v,hidden,normal,255.png').resize((450, 450))
+
+        com1 = Image.alpha_composite(im1, im2)
+        eyes_closed = Image.alpha_composite(com1, im3)
+
+        im4 = self.RBGAImage('static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png').resize((450, 450))
+        im5 = self.RBGAImage('static/ghost/L07,R1,C1,eye_direct,visible,normal,255.png').resize((450, 450))
+
+        com3 = Image.alpha_composite(eyes_closed, im4)
+        com4 = Image.alpha_composite(com3, im5)
+
+        self.image_open = ImageTk.PhotoImage(com4)
+        self.image_closed = ImageTk.PhotoImage(eyes_closed)
+        self.grip = tk.Label(self, image=self.image_open, bg="brown")
         self.grip.pack()
 
         self.menu = tk.Menu(self, tearoff=0)
@@ -70,6 +85,11 @@ class FloatingWindow(tk.Toplevel):
         y = self.winfo_y() + deltay
         self.geometry(f"+{x}+{y}")
 
+    def animate(self):
+        pass
+        # self.grid.pack_forget()
+        # self.grip = tk.Label(self, image=self.image_closed, bg="brown")
+        # self.grip.pack()
 
 app=App()
 app.mainloop()
