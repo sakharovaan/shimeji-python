@@ -17,7 +17,6 @@ class FloatingWindow(tk.Toplevel):
         self.geometry("+450+450")
         self.wm_attributes("-topmost", True)
         self.wm_attributes("-transparentcolor", "brown")
-        self.app.after(0, self.animate)
 
         # self.label = tk.Label(self, text="Click on the grip to move")
         # self.grip = tk.Label(self, bitmap="gray25")
@@ -39,11 +38,15 @@ class FloatingWindow(tk.Toplevel):
 
         self.image_open = ImageTk.PhotoImage(com4)
         self.image_closed = ImageTk.PhotoImage(eyes_closed)
-        self.grip = tk.Label(self, image=self.image_open, bg="brown")
+        self.grip = tk.Canvas(self, width=450, height=450,  background="brown", bd=0, highlightthickness=0, relief='ridge')
+
+        self.grip.create_image(0, 0, image=self.image_closed, anchor='nw', tags=("image_closed",))
+        self.grip.create_image(0, 0, image=self.image_open, anchor='nw', tags=("image_open",))
+
         self.grip.pack()
 
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Cut", command=lambda: self.menu_callback("1"))
+        self.menu.add_command(label="Cut", command=lambda: self.menu_callback("aaa"))
         self.menu.add_command(label="Copy", command=lambda: self.menu_callback("2"))
         self.menu.add_command(label="Paste", command=lambda: self.menu_callback("3"))
         self.menu.add_command(label="Reload", command=lambda: self.menu_callback("4"))
@@ -55,6 +58,9 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonPress-3>", self.right_press)
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
+
+        self.blinked = False
+        self.app.after(1000, self.animate)
 
     @staticmethod
     def RBGAImage(path):
@@ -73,6 +79,8 @@ class FloatingWindow(tk.Toplevel):
     def menu_callback(self, element):
         if element == "exit":
             self.app.destroy()
+        else:
+            raise
 
     def left_release(self, event):
         self.x = None
@@ -86,10 +94,14 @@ class FloatingWindow(tk.Toplevel):
         self.geometry(f"+{x}+{y}")
 
     def animate(self):
-        pass
-        # self.grid.pack_forget()
-        # self.grip = tk.Label(self, image=self.image_closed, bg="brown")
-        # self.grip.pack()
+        if self.blinked:
+            self.grip.tag_raise("image_open", "image_closed")
+            self.blinked = False
+            self.app.after(5000, self.animate)
+        else:
+            self.grip.tag_raise("image_closed", "image_open")
+            self.blinked = True
+            self.app.after(100, self.animate)
 
 app=App()
 app.mainloop()
