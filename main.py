@@ -21,11 +21,6 @@ class FloatingWindow(tk.Toplevel):
         self.wm_attributes("-transparentcolor", "brown")
         self.image = ImageLoader('ghost.yaml')
 
-        # self.label = tk.Label(self, text="Click on the grip to move")
-        # self.grip = tk.Label(self, bitmap="gray25")
-        # self.grip.pack(side="left", fill="y")
-        # self.label.pack(side="right", fill="both", expand=True)
-
         self.grip = tk.Canvas(self, width=450, height=450,  background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.grip.create_image(0, 0, image=self.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))

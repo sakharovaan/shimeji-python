@@ -24,24 +24,12 @@ class ImageLoader:
     def _render_ebm(self, e, b, m):
         op = self._loadimage(self._config['background']['file'])
 
-        for f in e['open']['file']:
-            op = Image.alpha_composite(op, self._loadimage(f))
-
-        for f in b['file']:
-            op = Image.alpha_composite(op, self._loadimage(f))
-
-        for f in m['file']:
+        for f in list(e['open']['file'] + b['file'] + m['file']):
             op = Image.alpha_composite(op, self._loadimage(f))
 
         cl = self._loadimage(self._config['background']['file'])
 
-        for f in e['closed']['file']:
-            cl = Image.alpha_composite(cl, self._loadimage(f))
-
-        for f in b['file']:
-            cl = Image.alpha_composite(cl, self._loadimage(f))
-
-        for f in m['file']:
+        for f in list(e['closed']['file'] + b['file'] + m['file']):
             cl = Image.alpha_composite(cl, self._loadimage(f))
 
         return {'opened': ImageTk.PhotoImage(op), 'closed': ImageTk.PhotoImage(cl)}
