@@ -1,0 +1,38 @@
+---
+
+background:
+  file: 'static/ghost/L01,R1,C1,background,hidden,normal,255.png'
+
+elements:
+  eyes:
+    - name: direct
+      open:
+        file:
+          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
+          - 'static/ghost/L07,R1,C1,eye_direct,visible,normal,255.png'
+      closed:
+        file: []
+  eyebrows:
+    - name: v
+      file:
+        - 'static/ghost/L04,R1,C1,eyebrows_v,hidden,normal,255.png'
+  mouth:
+    - name: cat
+      file:
+        - 'static/ghost/L17,R1,C1,mouth_cat,hidden,normal,255.png'
+
+timings:
+  blink:
+    open:
+      min: 1000
+      max: 5000
+    closed:
+      min: 10
+      max: 50
+  change_random_expression:
+    min: 10000
+    max: 50000
+
+size:
+  width: 450
+  height: 450
