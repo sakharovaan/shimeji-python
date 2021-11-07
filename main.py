@@ -1,9 +1,9 @@
 import tkinter as tk
-from PIL import Image, ImageTk
+from PIL import Image
 
 from imageloader import ImageLoader
 from blink_plugin import BlinkPlugin
-
+from expression_plugin import ExpressionPlugin
 
 class App(tk.Tk):
     def __init__(self):
@@ -22,12 +22,7 @@ class FloatingWindow(tk.Toplevel):
         self.wm_attributes("-transparentcolor", "brown")
         self.image = ImageLoader('ghost.yaml')
 
-        self.grip = tk.Canvas(self, width=450, height=450,  background="brown", bd=0, highlightthickness=0, relief='ridge')
-
-        self.grip.create_image(0, 0, image=self.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
-        self.grip.create_image(0, 0, image=self.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
-
-        self.grip.pack()
+        self.grip = tk.Canvas(self, width=450, height=450, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.menu = tk.Menu(self, tearoff=0)
         self.menu.add_command(label="Cut", command=lambda: self.menu_callback("aaa"))
@@ -43,7 +38,8 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
 
-        b = BlinkPlugin(self, 'ghost.yaml')
+        ExpressionPlugin(self, 'ghost.yaml')
+        BlinkPlugin(self, 'ghost.yaml')
 
     @staticmethod
     def RBGAImage(path):

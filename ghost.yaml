@@ -12,6 +12,20 @@ elements:
           - 'static/ghost/L07,R1,C1,eye_direct,visible,normal,255.png'
       closed:
         file: []
+    - name: right
+      open:
+        file:
+          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
+          - 'static/ghost/L06,R1,C1,eye_right,hidden,normal,255.png'
+      closed:
+        file: [ ]
+    - name: left
+      open:
+        file:
+          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
+          - 'static/ghost/L08,R1,C1,eye_left,hidden,normal,255.png'
+      closed:
+        file: [ ]
   eyebrows:
     - name: v
       file:
@@ -24,11 +38,11 @@ elements:
 timings:
   blink:
     open:
-      min: 2000
-      max: 7000
+      min: 5000
+      max: 10000
     closed:
-      min: 30
-      max: 60
+      min: 40
+      max: 100
   change_random_expression:
     min: 10000
     max: 50000

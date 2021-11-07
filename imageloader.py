@@ -50,3 +50,6 @@ class ImageLoader:
 
     def getimg(self, ident, state):
         return self._imagebase[ident][state]
+
+    def getexprlist(self):
+        return list(self._imagebase.keys())
