@@ -2,6 +2,7 @@ import tkinter as tk
 from PIL import Image, ImageTk
 
 from imageloader import ImageLoader
+from blink_plugin import BlinkPlugin
 
 
 class App(tk.Tk):
@@ -42,8 +43,7 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
 
-        self.blinked = False
-        self.app.after(1000, self.animate)
+        b = BlinkPlugin(self, 'ghost.yaml')
 
     @staticmethod
     def RBGAImage(path):
@@ -76,15 +76,6 @@ class FloatingWindow(tk.Toplevel):
         y = self.winfo_y() + deltay
         self.geometry(f"+{x}+{y}")
 
-    def animate(self):
-        if self.blinked:
-            self.grip.tag_raise("image_open", "image_closed")
-            self.blinked = False
-            self.app.after(5000, self.animate)
-        else:
-            self.grip.tag_raise("image_closed", "image_open")
-            self.blinked = True
-            self.app.after(100, self.animate)
 
 app=App()
 app.mainloop()
