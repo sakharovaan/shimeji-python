@@ -5,6 +5,7 @@ from imageloader import ImageLoader
 from blink_plugin import BlinkPlugin
 from expression_plugin import ExpressionPlugin
 
+
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)

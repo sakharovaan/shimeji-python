@@ -30,11 +30,48 @@ elements:
     - name: v
       file:
         - 'static/ghost/L04,R1,C1,eyebrows_v,hidden,normal,255.png'
+    - name: up
+      file:
+        - 'static/ghost/L02,R1,C1,eyebrows_up,hidden,normal,255.png'
+    - name: straight
+      file:
+        - 'static/ghost/L03,R1,C1,eyebrows_straight,hidden,normal,255.png'
   mouth:
     - name: cat
       file:
         - 'static/ghost/L17,R1,C1,mouth_cat,hidden,normal,255.png'
-
+    - name: triangle
+      mood: ['bad']
+      file:
+        - 'static/ghost/L09,R1,C1,mouth_triangle,hidden,normal,255.png'
+    - name: sidesmile
+      mood: ['good']
+      file:
+        - 'static/ghost/L10,R1,C1,mouth_sidesmile,hidden,normal,255.png'
+    - name: lightgrin
+      mood: ['good']
+      file:
+        - 'static/ghost/L11,R1,C1,mouth_lightgrin,hidden,normal,255.png'
+    - name: sidestraight
+      mood: ['neutral']
+      file:
+        - 'static/ghost/L12,R1,C1,mouth_sidestraight,hidden,normal,255.png'
+    - name: mediumdown
+      mood: ['bad']
+      file:
+        - 'static/ghost/L13,R1,C1,mouth_direct_mediumdown,hidden,normal,255.png'
+    - name: straight
+      mood: ['neutral']
+      file:
+        - 'static/ghost/L15,R1,C1,mouth_direct_straight,hidden,normal,255.png'
+    - name: straightdown
+      mood: ['neutral']
+      file:
+        - 'static/ghost/L14,R1,C1,mouth_direct_straightdown,hidden,normal,255.png'
+    - name: side_down
+      mood: ['bad']
+      file:
+        - 'static/ghost/L16,R1,C1,mouth_side_down,hidden,normal,255.png'
 timings:
   blink:
     open:
@@ -44,8 +81,8 @@ timings:
       min: 40
       max: 100
   change_random_expression:
-    min: 10000
-    max: 50000
+    min: 30000
+    max: 120000
 
 size:
   width: 450
