@@ -6,7 +6,7 @@
 
 import yaml
 import random
-
+import logging
 
 class ExpressionPlugin:
     def __init__(self, window, _ghostconfig):
@@ -27,6 +27,9 @@ class ExpressionPlugin:
 
     def random_tick(self):
         newexpr = random.choice(self.w.image.getexprlist())
+        while 'bad' in self.w.image.getmood(newexpr):
+            logging.debug(newexpr + " is bad mood expression, trying again")
+            newexpr = random.choice(self.w.image.getexprlist())
 
         for c in self.w.grip.find_withtag('image_closed'):
             self.w.grip.itemconfig(c, image=self.w.image.getimg(newexpr, 'closed'))

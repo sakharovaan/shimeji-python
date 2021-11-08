@@ -32,7 +32,9 @@ class ImageLoader:
         for f in list(e['closed']['file'] + b['file'] + m['file']):
             cl = Image.alpha_composite(cl, self._loadimage(f))
 
-        return {'opened': ImageTk.PhotoImage(op), 'closed': ImageTk.PhotoImage(cl)}
+        return {'opened': ImageTk.PhotoImage(op),
+                'closed': ImageTk.PhotoImage(cl),
+                'mood': list(m.get('mood', []) + b.get('mood', []) + e.get('mood', []))}
 
     def _loadimage(self, path):
         if path in self._imagecache:
@@ -50,6 +52,9 @@ class ImageLoader:
 
     def getimg(self, ident, state):
         return self._imagebase[ident][state]
+
+    def getmood(self, ident):
+        return self._imagebase[ident]['mood']
 
     def getexprlist(self):
         return list(self._imagebase.keys())

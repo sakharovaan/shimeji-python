@@ -1,5 +1,6 @@
 import tkinter as tk
 from PIL import Image
+import logging
 
 from imageloader import ImageLoader
 from blink_plugin import BlinkPlugin
@@ -25,8 +26,11 @@ class FloatingWindow(tk.Toplevel):
 
         self.grip = tk.Canvas(self, width=450, height=450, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
+        self.ep = ExpressionPlugin(self, 'ghost.yaml')
+        self.bp = BlinkPlugin(self, 'ghost.yaml')
+
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Cut", command=lambda: self.menu_callback("aaa"))
+        self.menu.add_command(label="Next expression", command=self.ep.random_tick)
         self.menu.add_command(label="Copy", command=lambda: self.menu_callback("2"))
         self.menu.add_command(label="Paste", command=lambda: self.menu_callback("3"))
         self.menu.add_command(label="Reload", command=lambda: self.menu_callback("4"))
@@ -39,8 +43,6 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
 
-        ExpressionPlugin(self, 'ghost.yaml')
-        BlinkPlugin(self, 'ghost.yaml')
 
     @staticmethod
     def RBGAImage(path):
@@ -74,5 +76,6 @@ class FloatingWindow(tk.Toplevel):
         self.geometry(f"+{x}+{y}")
 
 
+logging.basicConfig(level=logging.DEBUG)
 app=App()
 app.mainloop()
