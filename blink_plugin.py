@@ -16,7 +16,7 @@ class BlinkPlugin:
         self.blink_close_min = self._config['timings']['blink']['closed']['min']
         self.blink_close_max = self._config['timings']['blink']['closed']['max']
 
-        window.app.after(10, self.tick())
+        window.app.after(10, self.tick)
 
     def tick(self):
         if self.blinked:

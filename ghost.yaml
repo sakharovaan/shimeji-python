@@ -97,3 +97,11 @@ dialogue:
       file: 'static/dialogue/middle.png'
     - name: top
       file: 'static/dialogue/top.png'
+  text:
+    offset:
+      xleft: 20
+      xright: 50
+      y: 10
+    font: Consolas
+    size: 15
+    speed: 20

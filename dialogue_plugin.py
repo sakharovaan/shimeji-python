@@ -1,7 +1,7 @@
 import yaml
 import tkinter as tk
 import random
-
+import logging
 
 class DialoguePlugin:
     def __init__(self, window, _ghostconfig):
@@ -12,6 +12,28 @@ class DialoguePlugin:
             self._config = yaml.safe_load(f.read())
 
         self.grip = None
+        self._text_to_render = iter("Привет, я Катра! Спасибо, что теперь я могу говорить!")
+        self._rendered_text = ""
+        self._textid = None
+        self._textspeed = self._config['dialogue']['text']['speed']
+
+    def _render_text_init(self):
+        self._textid = self.w.grip.create_text(self._config['dialogue']['offset'] + self._config['dialogue']['text']['offset']['xleft'],
+                                               self._config['dialogue']['text']['offset']['y'],
+                                               text=self._rendered_text,
+                                               anchor=tk.NW,
+                                               width=self._config['dialogue']['width'] - self._config['dialogue']['text']['offset']['xright'],
+                                               fill='black', font=(self._config['dialogue']['text']['font'],
+                                                                   self._config['dialogue']['text']['size']))
+        self.w.app.after(self._textspeed, self._render_text_tick)
+
+    def _render_text_tick(self):
+        newletter = next(self._text_to_render, None)
+        if newletter is not None:
+            self._rendered_text += newletter
+            logging.debug("Rendering " + self._rendered_text)
+            self.w.grip.itemconfig(self._textid, text=self._rendered_text)
+            self.w.app.after(self._textspeed, self._render_text_tick)
 
     def _render_back(self):
         h_cursor = 0

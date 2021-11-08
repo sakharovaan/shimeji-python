@@ -35,7 +35,7 @@ class FloatingWindow(tk.Toplevel):
         self.menu.add_command(label="Next expression", command=self.ep.random_tick)
         self.menu.add_command(label="Show dialogue", command=self.dp._render_back)
         self.menu.add_command(label="Hide dialogue", command=self.dp._hide_back)
-        self.menu.add_command(label="Reload", command=lambda: self.menu_callback("4"))
+        self.menu.add_command(label="Render text", command=self.dp._render_text_init)
         self.menu.add_checkbutton(label="add_checkbutton")
         self.menu.add_separator()
         self.menu.add_command(label="Exit", command=lambda: self.menu_callback("exit"))

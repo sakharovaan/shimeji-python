@@ -17,8 +17,8 @@ class ExpressionPlugin:
         self.random_change_max = self._config['timings']['change_random_expression']['max']
         self.random_change_min = self._config['timings']['change_random_expression']['min']
         self._random_expression_init()
-        window.app.after(10, self.random_tick())
-        window.app.after(10, self.forced_tick())
+        window.app.after(10, self.random_tick)
+        window.app.after(10, self.forced_tick)
 
     def _random_expression_init(self):
         self.w.grip.create_image(self._config['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
