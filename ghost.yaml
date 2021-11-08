@@ -84,6 +84,16 @@ timings:
     min: 30000
     max: 120000
 
-size:
+ghost:
   width: 450
-  height: 450
+
+dialogue:
+  width: 450
+  offset: 150
+  elements:
+    - name: bottom
+      file: 'static/dialogue/bottom.png'
+    - name: middle
+      file: 'static/dialogue/middle.png'
+    - name: top
+      file: 'static/dialogue/top.png'

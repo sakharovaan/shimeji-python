@@ -21,9 +21,9 @@ class ExpressionPlugin:
         window.app.after(10, self.forced_tick())
 
     def _random_expression_init(self):
-        self.w.grip.create_image(0, 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
-        self.w.grip.create_image(0, 0, image=self.w.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
-        self.w.grip.pack()
+        self.w.grip.create_image(self._config['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
+        self.w.grip.create_image(self._config['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
+        self.w.grip.pack(side="right", fill="both", expand=True)
 
     def random_tick(self):
         newexpr = random.choice(self.w.image.getexprlist())

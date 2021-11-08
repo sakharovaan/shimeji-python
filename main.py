@@ -5,6 +5,7 @@ import logging
 from imageloader import ImageLoader
 from blink_plugin import BlinkPlugin
 from expression_plugin import ExpressionPlugin
+from dialogue_plugin import DialoguePlugin
 
 
 class App(tk.Tk):
@@ -24,15 +25,16 @@ class FloatingWindow(tk.Toplevel):
         self.wm_attributes("-transparentcolor", "brown")
         self.image = ImageLoader('ghost.yaml')
 
-        self.grip = tk.Canvas(self, width=450, height=450, background="brown", bd=0, highlightthickness=0, relief='ridge')
+        self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.ep = ExpressionPlugin(self, 'ghost.yaml')
         self.bp = BlinkPlugin(self, 'ghost.yaml')
+        self.dp = DialoguePlugin(self, 'ghost.yaml')
 
         self.menu = tk.Menu(self, tearoff=0)
         self.menu.add_command(label="Next expression", command=self.ep.random_tick)
-        self.menu.add_command(label="Copy", command=lambda: self.menu_callback("2"))
-        self.menu.add_command(label="Paste", command=lambda: self.menu_callback("3"))
+        self.menu.add_command(label="Show dialogue", command=self.dp._render_back)
+        self.menu.add_command(label="Hide dialogue", command=self.dp._hide_back)
         self.menu.add_command(label="Reload", command=lambda: self.menu_callback("4"))
         self.menu.add_checkbutton(label="add_checkbutton")
         self.menu.add_separator()
@@ -42,7 +44,6 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonPress-3>", self.right_press)
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
-
 
     @staticmethod
     def RBGAImage(path):

@@ -12,6 +12,7 @@ class ImageLoader:
         self._ghostconfig = ghostconfig
         self._imagecache = {} #cache of raw/rescaled files
         self._imagebase = {} #cache of rendered layer files
+        self._dialoguebase = {}
 
         with open(self._ghostconfig) as f:
             self._config = yaml.safe_load(f.read())
@@ -20,6 +21,9 @@ class ImageLoader:
             for b in self._config['elements']['eyebrows']:
                 for m in self._config['elements']['mouth']:
                     self._imagebase[f"{e['name']}_{b['name']}_{m['name']}"] = self._render_ebm(e, b, m)
+
+        for d in self._config['dialogue']['elements']:
+            self._dialoguebase[d['name']] = self._render_dialogue(d)
 
     def _render_ebm(self, e, b, m):
         op = self._loadimage(self._config['background']['file'])
@@ -36,13 +40,17 @@ class ImageLoader:
                 'closed': ImageTk.PhotoImage(cl),
                 'mood': list(m.get('mood', []) + b.get('mood', []) + e.get('mood', []))}
 
-    def _loadimage(self, path):
+    def _render_dialogue(self, d):
+        return ImageTk.PhotoImage(self._loadimage(d['file'], confsource="dialogue"))
+
+    def _loadimage(self, path, confsource="ghost"):
         if path in self._imagecache:
             return self._imagecache[path]
         else:
-            self._imagecache[path] = self.RBGAImage(path).resize((
-                self._config['size']['width'],
-                self._config['size']['height']))
+            with self.RBGAImage(path) as im:
+                wpercent = (self._config[confsource]['width'] / float(im.size[0]))
+                hsize = int((float(im.size[1]) * float(wpercent)))
+                self._imagecache[path] = im.resize((self._config[confsource]['width'], hsize), Image.BICUBIC)
 
             return self._imagecache[path]
 
@@ -58,3 +66,6 @@ class ImageLoader:
 
     def getexprlist(self):
         return list(self._imagebase.keys())
+
+    def getdlimg(self, pos):
+        return self._dialoguebase[pos]
