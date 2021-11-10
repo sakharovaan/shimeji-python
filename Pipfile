@@ -4,13 +4,10 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-kivy = {extras = ["dev", "full"],version = "*"}
-funcparserlib = "==1.0.0a0"
 pyyaml = "*"
-kivyontop = "*"
 pyautogui = "*"
 pillow = "*"
-png = "*"
+humanize = "*"
 
 [dev-packages]
 

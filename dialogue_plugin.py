@@ -1,7 +1,7 @@
 import yaml
 import tkinter as tk
-import random
 import logging
+
 
 class DialoguePlugin:
     def __init__(self, window, _ghostconfig):
@@ -11,8 +11,7 @@ class DialoguePlugin:
         with open(_ghostconfig) as f:
             self._config = yaml.safe_load(f.read())
 
-        self.grip = None
-        self._text_to_render = iter("Привет, я Катра! Спасибо, что теперь я могу говорить!")
+        self._text_to_render = iter("")
         self._rendered_text = ""
         self._textid = None
         self._textspeed = self._config['dialogue']['text']['speed']
@@ -22,6 +21,27 @@ class DialoguePlugin:
         self._h_middle = self.w.image.getdlimg('middle').height()
         self._h_bottom = self.w.image.getdlimg('bottom').height()
         self._h_bottom_id = None
+
+        self._dialogue_is_shown = False
+
+        window.app.after(100, self.tick)
+
+    def _clear(self):
+        self._text_to_render = iter("")
+        self._rendered_text = ""
+        self._textid = None
+        self._dialogue_desired_width = 40
+        self._h_cursor = 0
+        self._h_bottom_id = None
+        self._dialogue_is_shown = False
+
+    def tick(self):
+        if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown:
+            self._dialogue_is_shown = True
+            self._text_to_render = iter(self.w.dialogue_queue.get(block=False))
+            self._render_text_init()
+
+        self.w.app.after(100, self.tick)
 
     def _render_text_init(self):
         logging.debug('_render_text_init')
@@ -52,6 +72,8 @@ class DialoguePlugin:
                 self._render_back_down()
 
             self.w.app.after(self._textspeed, self._render_text_tick)
+        else:
+            self.w.app.after(self._config['dialogue']['wait'], self._hide_all)
 
         self.w.grip.tag_raise("dialogue_text", "dialogue_image")
 
@@ -88,3 +110,4 @@ class DialoguePlugin:
     def _hide_all(self):
         for c in self.w.grip.find_withtag('dialogue_all'):
             self.w.grip.delete(c)
+        self._clear()

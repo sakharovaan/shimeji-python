@@ -105,3 +105,4 @@ dialogue:
     font: Consolas
     size: 15
     speed: 20
+  wait: 5000

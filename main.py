@@ -1,11 +1,13 @@
 import tkinter as tk
 from PIL import Image
 import logging
+import queue
 
 from imageloader import ImageLoader
 from blink_plugin import BlinkPlugin
 from expression_plugin import ExpressionPlugin
 from dialogue_plugin import DialoguePlugin
+from hour_dialogue_plugin import HourDialoguePlugin
 
 
 class App(tk.Tk):
@@ -27,9 +29,12 @@ class FloatingWindow(tk.Toplevel):
 
         self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
+        self.dialogue_queue = queue.Queue()
+
         self.ep = ExpressionPlugin(self, 'ghost.yaml')
         self.bp = BlinkPlugin(self, 'ghost.yaml')
         self.dp = DialoguePlugin(self, 'ghost.yaml')
+        self.hdp = HourDialoguePlugin(self, 'ghost.yaml')
 
         self.menu = tk.Menu(self, tearoff=0)
         self.menu.add_command(label="Next expression", command=self.ep.random_tick)
