@@ -100,7 +100,7 @@ dialogue:
   text:
     offset:
       xleft: 20
-      xright: 50
+      xright: 70
       y: 10
     font: Consolas
     size: 15
