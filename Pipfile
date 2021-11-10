@@ -8,6 +8,7 @@ pyyaml = "*"
 pyautogui = "*"
 pillow = "*"
 humanize = "*"
+pyttsx3 = "*"
 
 [dev-packages]
 
