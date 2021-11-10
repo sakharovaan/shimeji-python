@@ -8,6 +8,7 @@ from blink_plugin import BlinkPlugin
 from expression_plugin import ExpressionPlugin
 from dialogue_plugin import DialoguePlugin
 from hour_dialogue_plugin import HourDialoguePlugin
+from random_dialogue_plugin import RandomDialoguePlugin
 
 
 class App(tk.Tk):
@@ -35,11 +36,11 @@ class FloatingWindow(tk.Toplevel):
         self.bp = BlinkPlugin(self, 'ghost.yaml')
         self.dp = DialoguePlugin(self, 'ghost.yaml')
         self.hdp = HourDialoguePlugin(self, 'ghost.yaml')
+        self.rdp = RandomDialoguePlugin(self, 'ghost.yaml')
 
         self.menu = tk.Menu(self, tearoff=0)
         self.menu.add_command(label="Next expression", command=self.ep.random_tick)
-        self.menu.add_command(label="Show dialogue", command=self.dp._render_text_init)
-        self.menu.add_command(label="Hide dialogue", command=self.dp._hide_all)
+        self.menu.add_command(label="Show dialogue", command=self.rdp._say)
         self.menu.add_checkbutton(label="add_checkbutton")
         self.menu.add_separator()
         self.menu.add_command(label="Exit", command=lambda: self.menu_callback("exit"))

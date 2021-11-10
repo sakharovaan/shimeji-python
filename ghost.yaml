@@ -83,6 +83,9 @@ timings:
   change_random_expression:
     min: 30000
     max: 120000
+  random_phrase:
+    min: 300000
+    max: 600000
 
 ghost:
   width: 450
@@ -105,4 +108,4 @@ dialogue:
     font: Consolas
     size: 15
     speed: 20
-  wait: 5000
+  wait: 30000
