@@ -27,15 +27,22 @@ class DialoguePlugin:
         window.app.after(100, self.tick)
 
     def _clear(self):
-        self._text_to_render = iter("")
-        self._rendered_text = ""
-        self._textid = None
-        self._dialogue_desired_width = 40
-        self._h_cursor = 0
-        self._h_bottom_id = None
-        self._dialogue_is_shown = False
+        """
+        После того как у нас диалог скроется, нам нужно будет привести все переменные в состоянии по умолчанию
+        """
+        self._text_to_render = iter("")  # итератор с текстом который нужно отрисовать
+        self._rendered_text = ""  # текст который уже отрисован
+        self._textid = None  # id объекта текста, чтобы каждый раз не искать
+        self._dialogue_desired_width = 40  # затравка для отриовки диалога, начальная высота
+        self._h_cursor = 0  # когда у нас динамический ресайз, эта переменная хранит текущее положение высоты,
+        # на которой нужно отрисосвывать следующий фрагмент
+        self._h_bottom_id = None  # это как флаг что у нас отрисован низ для динамического размера
+        self._dialogue_is_shown = False  # чтобы отрисовывать только один диалог одновременно
 
     def tick(self):
+        """
+        Основной коллбек на асинхронный цикл, проверяет, пуста ли очередь сообщений и инициирует диалог
+        """
         if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown:
             self._dialogue_is_shown = True
             self._text_to_render = iter(self.w.dialogue_queue.get(block=False))
@@ -44,6 +51,9 @@ class DialoguePlugin:
         self.w.app.after(100, self.tick)
 
     def _render_text_init(self):
+        """
+        Инциализация диалога
+        """
         logging.debug('_render_text_init')
         self._textid = self.w.grip.create_text(self._config['dialogue']['offset'] + self._config['dialogue']['text']['offset']['xleft'],
                                                self._config['dialogue']['text']['offset']['y'],
@@ -56,6 +66,9 @@ class DialoguePlugin:
         self.w.app.after(self._textspeed, self._render_text_tick)
 
     def _render_text_tick(self):
+        """
+        Посимвольная отрисовка текста
+        """
         newletter = next(self._text_to_render, None)
         if not self._h_bottom_id:
             self._render_back_top()
@@ -68,11 +81,12 @@ class DialoguePlugin:
 
             s = self.w.grip.bbox(self._textid)
             if s[1] - s[3] != self._dialogue_desired_width:
+                # если у нас высота текста больше чем задник, перерисовываем его
                 self._dialogue_desired_width = s[3] - s[1] + self._h_bottom
                 self._render_back_down()
 
             self.w.app.after(self._textspeed, self._render_text_tick)
-        else:
+        else:  # если у нас больше нет символов для отрисовки -- мы устанавливаем таймер на его скрытие
             self.w.app.after(self._config['dialogue']['wait'], self._hide_all)
 
         self.w.grip.tag_raise("dialogue_text", "dialogue_image")
@@ -86,19 +100,21 @@ class DialoguePlugin:
 
     def _render_back_down(self):
         logging.debug('_render_back_down')
-        if self._h_bottom_id:
+        if self._h_bottom_id:  # если у нас задник уже отрисован, мы удаляем низ, и дорисовываем средние части
             logging.debug('delete bottom image')
             self.w.grip.delete(self._h_bottom_id)
             self.w.grip.pack_forget()
         logging.debug("desired " + str(self._dialogue_desired_width) + " cursor " + str(self._h_cursor))
         while (self._h_cursor + self._h_bottom) < self._dialogue_desired_width:
             logging.debug('create middle image on' + str(self._h_cursor))
+            # отрисовываем столько средних частей сколько нужно чтобы уместить текст
             self.w.grip.create_image(self._config['dialogue']['offset'], self._h_cursor,
                                      image=self.w.image.getdlimg('middle'), anchor='nw',
                                      tags=('dialogue_middle', 'dialogue_image', 'dialogue_all'))
             self._h_cursor += self._h_middle
 
         logging.debug('create bottom image on' + str(self._h_cursor))
+        # под конец отрисовываем низ
         self._h_bottom_id = self._h_bottom_id = self.w.grip.create_image(self._config['dialogue']['offset'],
                                                                          self._h_cursor,
                                                                          image=self.w.image.getdlimg('bottom'),
