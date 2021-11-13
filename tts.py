@@ -38,6 +38,10 @@ rate = engine.getProperty('rate')   # getting details of current speaking rate
 print (rate)                        #printing current voice rate
 engine.setProperty('rate', 150)     # setting up new voice rate
 
+volume = engine.getProperty('volume')   #getting to know current volume level (min=0 and max=1)
+print (volume)                          #printing current volume level
+engine.setProperty('volume',0.5)    # setting up volume level  between 0 and 1
+
 index = 0
 for voice in voices:
    print(f'index-> {index} -- {voice.name} -- {voice.id}')
@@ -45,6 +49,8 @@ for voice in voices:
 
 
 engine.setProperty('voice', 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\Vocalizer Expressive milena premium-high 22kHz')
+engine.startLoop()
+
 engine.say('<pitch middle="5">Саша, пора уже ложиться!</pitch>')
 engine.runAndWait()
 engine.stop()
