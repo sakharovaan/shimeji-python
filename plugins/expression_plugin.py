@@ -8,7 +8,8 @@ import yaml
 import random
 import logging
 
-class ExpressionPlugin:
+
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
         with open(_ghostconfig) as f:

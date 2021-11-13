@@ -2,7 +2,7 @@ import random
 import yaml
 
 
-class BlinkPlugin:
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
         self.blinked = False

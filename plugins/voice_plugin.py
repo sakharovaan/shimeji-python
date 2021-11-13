@@ -5,7 +5,7 @@ import threading
 import time
 
 
-class VoicePlugin:
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
 

@@ -4,7 +4,7 @@ import logging
 import humanize
 
 
-class HourDialoguePlugin:
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
         self.blinked = False

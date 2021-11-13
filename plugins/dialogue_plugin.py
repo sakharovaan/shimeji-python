@@ -3,7 +3,7 @@ import tkinter as tk
 import logging
 
 
-class DialoguePlugin:
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
         self.blinked = False

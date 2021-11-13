@@ -1,15 +1,12 @@
-import tkinter as tk
-from PIL import Image
 import logging
 import queue
+import importlib
+import pkgutil
+
+import tkinter as tk
+from PIL import Image
 
 from imageloader import ImageLoader
-from blink_plugin import BlinkPlugin
-from expression_plugin import ExpressionPlugin
-from dialogue_plugin import DialoguePlugin
-from hour_dialogue_plugin import HourDialoguePlugin
-from random_dialogue_plugin import RandomDialoguePlugin
-from voice_plugin import VoicePlugin
 
 
 class App(tk.Tk):
@@ -40,16 +37,19 @@ class FloatingWindow(tk.Toplevel):
         self.dialogue_queue = queue.Queue()
         self.voice_queue = queue.Queue()
 
-        self.ep = ExpressionPlugin(self, 'ghost.yaml')
-        self.bp = BlinkPlugin(self, 'ghost.yaml')
-        self.dp = DialoguePlugin(self, 'ghost.yaml')
-        self.vp = VoicePlugin(self, 'ghost.yaml')
-        self.hdp = HourDialoguePlugin(self, 'ghost.yaml')
-        self.rdp = RandomDialoguePlugin(self, 'ghost.yaml')
+        self._plugins_modules = {
+            name: importlib.import_module('.' + name, package='plugins')
+            for finder, name, ispkg
+            in pkgutil.iter_modules(path=['plugins'])
+        }
+
+        self.plugins = {
+            name: plugin.Plugin(self, 'ghost.yaml') for name, plugin in self._plugins_modules.items()
+        }
 
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Next expression", command=self.ep.random_tick)
-        self.menu.add_command(label="Show dialogue", command=self.rdp._say)
+        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].random_tick)
+        self.menu.add_command(label="Show dialogue", command=self.plugins['random_dialogue_plugin']._say)
 
         config_menu = tk.Menu(self.menu)
         config_menu.add_checkbutton(label="Voice Enabled", onvalue=1, offvalue=0, variable=self.config['voice_enabled'])

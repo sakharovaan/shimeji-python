@@ -4,7 +4,7 @@ from datetime import datetime
 import random
 
 
-class RandomDialoguePlugin:
+class Plugin:
     def __init__(self, window, _ghostconfig):
         self.w = window
         self.blinked = False
