@@ -9,7 +9,7 @@ from expression_plugin import ExpressionPlugin
 from dialogue_plugin import DialoguePlugin
 from hour_dialogue_plugin import HourDialoguePlugin
 from random_dialogue_plugin import RandomDialoguePlugin
-
+from voice_plugin import VoicePlugin
 
 class App(tk.Tk):
     def __init__(self):
@@ -31,10 +31,12 @@ class FloatingWindow(tk.Toplevel):
         self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.dialogue_queue = queue.Queue()
+        self.voice_queue = queue.Queue()
 
         self.ep = ExpressionPlugin(self, 'ghost.yaml')
         self.bp = BlinkPlugin(self, 'ghost.yaml')
         self.dp = DialoguePlugin(self, 'ghost.yaml')
+        self.vp = VoicePlugin(self, 'ghost.yaml')
         self.hdp = HourDialoguePlugin(self, 'ghost.yaml')
         self.rdp = RandomDialoguePlugin(self, 'ghost.yaml')
 

@@ -44,9 +44,12 @@ class DialoguePlugin:
         Основной коллбек на асинхронный цикл, проверяет, пуста ли очередь сообщений и инициирует диалог
         """
         if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown:
+            text = self.w.dialogue_queue.get(block=False)
+
             self._dialogue_is_shown = True
-            self._text_to_render = iter(self.w.dialogue_queue.get(block=False))
+            self._text_to_render = iter(str(text))
             self._render_text_init()
+            self.w.voice_queue.put(text, block=False, timeout=None)
 
         self.w.app.after(100, self.tick)
 
