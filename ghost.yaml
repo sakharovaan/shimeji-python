@@ -108,4 +108,10 @@ dialogue:
     font: Consolas
     size: 15
     speed: 20
-  wait: 30000
+  wait: 15000
+
+voice:
+  rate: 150
+  volume: 5
+  pitch: 5
+  voice: 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\Vocalizer Expressive milena premium-high 22kHz'

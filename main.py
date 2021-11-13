@@ -11,6 +11,7 @@ from hour_dialogue_plugin import HourDialoguePlugin
 from random_dialogue_plugin import RandomDialoguePlugin
 from voice_plugin import VoicePlugin
 
+
 class App(tk.Tk):
     def __init__(self):
         tk.Tk.__init__(self)
@@ -30,6 +31,12 @@ class FloatingWindow(tk.Toplevel):
 
         self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
+        self.config = dict(
+            exit_initiated=False,
+            voice_enabled=tk.BooleanVar()
+        )
+        self.config['voice_enabled'].set(True)
+
         self.dialogue_queue = queue.Queue()
         self.voice_queue = queue.Queue()
 
@@ -43,7 +50,11 @@ class FloatingWindow(tk.Toplevel):
         self.menu = tk.Menu(self, tearoff=0)
         self.menu.add_command(label="Next expression", command=self.ep.random_tick)
         self.menu.add_command(label="Show dialogue", command=self.rdp._say)
-        self.menu.add_checkbutton(label="add_checkbutton")
+
+        config_menu = tk.Menu(self.menu)
+        config_menu.add_checkbutton(label="Voice Enabled", onvalue=1, offvalue=0, variable=self.config['voice_enabled'])
+        self.menu.add_cascade(label='Configuration', menu=config_menu)
+
         self.menu.add_separator()
         self.menu.add_command(label="Exit", command=lambda: self.menu_callback("exit"))
 
@@ -68,7 +79,7 @@ class FloatingWindow(tk.Toplevel):
 
     def menu_callback(self, element):
         if element == "exit":
-            self.app.destroy()
+            self.do_exit()
         else:
             raise
 
@@ -82,6 +93,10 @@ class FloatingWindow(tk.Toplevel):
         x = self.winfo_x() + deltax
         y = self.winfo_y() + deltay
         self.geometry(f"+{x}+{y}")
+
+    def do_exit(self):
+        self.config['exit_initiated'] = True
+        self.app.destroy()
 
 
 logging.basicConfig(level=logging.DEBUG)

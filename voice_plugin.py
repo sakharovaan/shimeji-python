@@ -15,18 +15,6 @@ class VoicePlugin:
         self._voice_thr = None
         window.app.after(100, self.tick)
 
-    @staticmethod
-    def onStart(name):
-        print('starting ' + name)
-
-    @staticmethod
-    def onWord(name, location, length):
-        print('word ' + name + location + length)
-
-    @staticmethod
-    def onEnd(name, completed):
-        print('finishing ' + name + completed)
-
     def tick(self):
         self._voice_thr = threading.Thread(target=self._thread)
         self._voice_thr.start()
@@ -34,14 +22,17 @@ class VoicePlugin:
     def _thread(self):
         self._engine = pyttsx3.init()
 
-        self._engine.setProperty('rate', 150)
-        self._engine.setProperty('volume', 0.5)
-        self._engine.setProperty('voice',
-                                 'HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Speech\Voices\Tokens\Vocalizer Expressive milena premium-high 22kHz')
+        for voice in self._engine.getProperty('voices'):
+            logging.debug('index-> ' + voice.name + ' ' + voice.id)
 
-        while True:
+        self._engine.setProperty('rate', self._config['voice']['rate'])
+        self._engine.setProperty('volume', self._config['voice']['volume'] / 10)
+        self._engine.setProperty('voice', self._config['voice']['voice'])
+
+        while not self.w.config['exit_initiated']:
             if not self.w.voice_queue.empty():
                 text = self.w.voice_queue.get(block=False)
-                self._engine.say('<pitch middle="5">' + text + '</pitch>')
-                self._engine.runAndWait()
+                if self.w.config['voice_enabled'].get():
+                    self._engine.say('<pitch middle="' + str(self._config['voice']['pitch']) + '">' + text + '</pitch>')
+                    self._engine.runAndWait()
             time.sleep(0.1)
