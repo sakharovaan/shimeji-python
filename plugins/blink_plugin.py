@@ -1,20 +1,19 @@
 import random
 import yaml
 
+from .base_plugin import BasePlugin
 
-class Plugin:
-    def __init__(self, window, _ghostconfig):
-        self.w = window
+
+class Plugin(BasePlugin):
+    def __init__(self, window):
+        super(Plugin, self).__init__(window)
         self.blinked = False
 
-        with open(_ghostconfig) as f:
-            self._config = yaml.safe_load(f.read())
-
         # better preload these values to prevent excessive dict lookup each time
-        self.blink_open_max = self._config['timings']['blink']['open']['max']
-        self.blink_open_min = self._config['timings']['blink']['open']['min']
-        self.blink_close_min = self._config['timings']['blink']['closed']['min']
-        self.blink_close_max = self._config['timings']['blink']['closed']['max']
+        self.blink_open_max = self.w.config['conffile']['timings']['blink']['open']['max']
+        self.blink_open_min = self.w.config['conffile']['timings']['blink']['open']['min']
+        self.blink_close_min = self.w.config['conffile']['timings']['blink']['closed']['min']
+        self.blink_close_max = self.w.config['conffile']['timings']['blink']['closed']['max']
 
         window.app.after(10, self.tick)
 

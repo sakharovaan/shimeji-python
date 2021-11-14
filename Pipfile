@@ -9,6 +9,7 @@ pyautogui = "*"
 pillow = "*"
 humanize = "*"
 pyttsx3 = "*"
+jinja2 = "*"
 
 [dev-packages]
 

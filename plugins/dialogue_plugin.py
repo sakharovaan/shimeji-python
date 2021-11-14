@@ -1,20 +1,18 @@
-import yaml
 import tkinter as tk
 import logging
 
+from .base_plugin import BasePlugin
 
-class Plugin:
-    def __init__(self, window, _ghostconfig):
-        self.w = window
+
+class Plugin(BasePlugin):
+    def __init__(self, window):
+        super(Plugin, self).__init__(window)
         self.blinked = False
-
-        with open(_ghostconfig) as f:
-            self._config = yaml.safe_load(f.read())
 
         self._text_to_render = iter("")
         self._rendered_text = ""
         self._textid = None
-        self._textspeed = self._config['dialogue']['text']['speed']
+        self._textspeed = self.w.config['conffile']['dialogue']['text']['speed']
         self._dialogue_desired_width = 40
         self._h_cursor = 0
         self._h_top = self.w.image.getdlimg('top').height()
@@ -58,14 +56,14 @@ class Plugin:
         Инциализация диалога
         """
         logging.debug('_render_text_init')
-        self._textid = self.w.grip.create_text(self._config['dialogue']['offset'] + self._config['dialogue']['text']['offset']['xleft'],
-                                               self._config['dialogue']['text']['offset']['y'],
+        self._textid = self.w.grip.create_text(self.w.config['conffile']['dialogue']['offset'] + self.w.config['conffile']['dialogue']['text']['offset']['xleft'],
+                                               self.w.config['conffile']['dialogue']['text']['offset']['y'],
                                                text=self._rendered_text,
                                                anchor=tk.NW,
                                                tags=('dialogue_text', 'dialogue_all'),
-                                               width=self._config['dialogue']['width'] - self._config['dialogue']['text']['offset']['xright'],
-                                               fill='black', font=(self._config['dialogue']['text']['font'],
-                                                                   self._config['dialogue']['text']['size']))
+                                               width=self.w.config['conffile']['dialogue']['width'] - self.w.config['conffile']['dialogue']['text']['offset']['xright'],
+                                               fill='black', font=(self.w.config['conffile']['dialogue']['text']['font'],
+                                                                   self.w.config['conffile']['dialogue']['text']['size']))
         self.w.app.after(self._textspeed, self._render_text_tick)
 
     def _render_text_tick(self):
@@ -90,13 +88,13 @@ class Plugin:
 
             self.w.app.after(self._textspeed, self._render_text_tick)
         else:  # если у нас больше нет символов для отрисовки -- мы устанавливаем таймер на его скрытие
-            self.w.app.after(self._config['dialogue']['wait'], self._hide_all)
+            self.w.app.after(self.w.config['conffile']['dialogue']['wait'], self._hide_all)
 
         self.w.grip.tag_raise("dialogue_text", "dialogue_image")
 
     def _render_back_top(self):
         logging.debug('_render_back_top')
-        self.w.grip.create_image(self._config['dialogue']['offset'], self._h_cursor, image=self.w.image.getdlimg('top'),
+        self.w.grip.create_image(self.w.config['conffile']['dialogue']['offset'], self._h_cursor, image=self.w.image.getdlimg('top'),
                                                      anchor='nw', tags=('dialogue_top', 'dialogue_image',
                                                                         'dialogue_all'))
         self._h_cursor += self._h_top
@@ -111,14 +109,14 @@ class Plugin:
         while (self._h_cursor + self._h_bottom) < self._dialogue_desired_width:
             logging.debug('create middle image on' + str(self._h_cursor))
             # отрисовываем столько средних частей сколько нужно чтобы уместить текст
-            self.w.grip.create_image(self._config['dialogue']['offset'], self._h_cursor,
+            self.w.grip.create_image(self.w.config['conffile']['dialogue']['offset'], self._h_cursor,
                                      image=self.w.image.getdlimg('middle'), anchor='nw',
                                      tags=('dialogue_middle', 'dialogue_image', 'dialogue_all'))
             self._h_cursor += self._h_middle
 
         logging.debug('create bottom image on' + str(self._h_cursor))
         # под конец отрисовываем низ
-        self._h_bottom_id = self._h_bottom_id = self.w.grip.create_image(self._config['dialogue']['offset'],
+        self._h_bottom_id = self._h_bottom_id = self.w.grip.create_image(self.w.config['conffile']['dialogue']['offset'],
                                                                          self._h_cursor,
                                                                          image=self.w.image.getdlimg('bottom'),
                                                                          anchor='nw',

@@ -2,6 +2,7 @@ import logging
 import queue
 import importlib
 import pkgutil
+import yaml
 
 import tkinter as tk
 from PIL import Image
@@ -30,8 +31,15 @@ class FloatingWindow(tk.Toplevel):
 
         self.config = dict(
             exit_initiated=False,
-            voice_enabled=tk.BooleanVar()
+            voice_enabled=tk.BooleanVar(),
+            conffile={},
+            strings={}
         )
+        with open('ghost.yaml', encoding='utf8') as f:
+            self.config['conffile'] = yaml.safe_load(f.read())
+        with open('strings.yaml', encoding='utf8') as f:
+            self.config['strings'] = yaml.safe_load(f.read())
+
         self.config['voice_enabled'].set(True)
 
         self.dialogue_queue = queue.Queue()
@@ -44,7 +52,7 @@ class FloatingWindow(tk.Toplevel):
         }
 
         self.plugins = {
-            name: plugin.Plugin(self, 'ghost.yaml') for name, plugin in self._plugins_modules.items()
+            name: plugin.Plugin(self) for name, plugin in self._plugins_modules.items()
         }
 
         self.menu = tk.Menu(self, tearoff=0)

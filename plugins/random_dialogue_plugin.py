@@ -3,23 +3,18 @@ import logging
 from datetime import datetime
 import random
 
+from .base_plugin import BasePlugin
 
-class Plugin:
-    def __init__(self, window, _ghostconfig):
-        self.w = window
+
+class Plugin(BasePlugin):
+    def __init__(self, window):
+        super(Plugin, self).__init__(window)
         self.blinked = False
 
-        with open(_ghostconfig) as f:
-            self._config = yaml.safe_load(f.read())
-
         self._elapsed_seconds = 0
-        self._random_min = self._config['timings']['random_phrase']['min']
-        self._random_max = self._config['timings']['random_phrase']['max']
+        self._random_min = self.w.config['conffile']['timings']['random_phrase']['min']
+        self._random_max = self.w.config['conffile']['timings']['random_phrase']['max']
         self._next_random = random.randint(self._random_min, self._random_max)
-
-        self._phrases = [
-            "Привет! Ты пока не добавил ни одной толковой фразы, но я верю в тебя!"
-        ]
 
        #window.app.after(3000, self.tick)
 
@@ -36,4 +31,4 @@ class Plugin:
         logging.debug("random dialogue " + str(self._elapsed_seconds))
 
     def _say(self):
-        self.w.dialogue_queue.put(random.choice(self._phrases), block=False, timeout=None)
+        self.w.dialogue_queue.put(self.render_text('random_phrazes'), block=False, timeout=None)

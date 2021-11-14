@@ -4,26 +4,25 @@
 # может сделать force измнения в этом же плагине по другому таймеру,
 # который будет опрашивать изменения в основном словаре (когда он появится)
 
-import yaml
 import random
 import logging
 
+from .base_plugin import BasePlugin
 
-class Plugin:
-    def __init__(self, window, _ghostconfig):
-        self.w = window
-        with open(_ghostconfig) as f:
-            self._config = yaml.safe_load(f.read())
 
-        self.random_change_max = self._config['timings']['change_random_expression']['max']
-        self.random_change_min = self._config['timings']['change_random_expression']['min']
+class Plugin(BasePlugin):
+    def __init__(self, window):
+        super(Plugin, self).__init__(window)
+
+        self.random_change_max = self.w.config['conffile']['timings']['change_random_expression']['max']
+        self.random_change_min = self.w.config['conffile']['timings']['change_random_expression']['min']
         self._random_expression_init()
         window.app.after(10, self.random_tick)
         window.app.after(10, self.forced_tick)
 
     def _random_expression_init(self):
-        self.w.grip.create_image(self._config['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
-        self.w.grip.create_image(self._config['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
+        self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
+        self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
         self.w.grip.pack(side="right", fill="both", expand=True)
 
     def random_tick(self):
