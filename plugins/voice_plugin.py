@@ -23,7 +23,7 @@ class Plugin:
         self._engine = pyttsx3.init()
 
         for voice in self._engine.getProperty('voices'):
-            logging.debug('index-> ' + voice.name + ' ' + voice.id)
+            logging.debug('voices-> ' + voice.name + ' ' + voice.id)
 
         self._engine.setProperty('rate', self._config['voice']['rate'])
         self._engine.setProperty('volume', self._config['voice']['volume'] / 10)
