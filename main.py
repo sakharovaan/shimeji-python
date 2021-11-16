@@ -44,6 +44,7 @@ class FloatingWindow(tk.Toplevel):
 
         self.dialogue_queue = queue.Queue()
         self.voice_queue = queue.Queue()
+        self.face_queue = queue.LifoQueue()
 
         self._plugins_modules = {
             name: importlib.import_module('.' + name, package='plugins')
@@ -56,7 +57,7 @@ class FloatingWindow(tk.Toplevel):
         }
 
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].random_tick)
+        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].next_rand)
         self.menu.add_command(label="Show dialogue", command=self.plugins['random_dialogue_plugin']._say)
 
         config_menu = tk.Menu(self.menu)

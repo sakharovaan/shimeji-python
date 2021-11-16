@@ -1,3 +1,4 @@
+import logging
 import random
 import yaml
 
@@ -19,10 +20,18 @@ class Plugin(BasePlugin):
 
     def tick(self):
         if self.blinked:
-            self.w.grip.tag_raise("image_open", "image_closed")
-            self.blinked = False
-            self.w.app.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
+            try:
+                self.w.grip.tag_raise("image_open", "image_closed")
+                self.blinked = False
+            except Exception as e:
+                logging.debug(e)
+            finally:
+                self.w.app.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
         else:
-            self.w.grip.tag_raise("image_closed", "image_open")
-            self.blinked = True
-            self.w.app.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)
+            try:
+                self.w.grip.tag_raise("image_closed", "image_open")
+                self.blinked = True
+            except Exception as e:
+                logging.debug(e)
+            finally:
+                self.w.app.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)

@@ -6,6 +6,7 @@
 
 import random
 import logging
+import queue
 
 from .base_plugin import BasePlugin
 
@@ -16,27 +17,40 @@ class Plugin(BasePlugin):
 
         self.random_change_max = self.w.config['conffile']['timings']['change_random_expression']['max']
         self.random_change_min = self.w.config['conffile']['timings']['change_random_expression']['min']
-        self._random_expression_init()
-        window.app.after(10, self.random_tick)
-        window.app.after(10, self.forced_tick)
+        self._random_expression_prod()
+        window.app.after(10, self._random_expression_cons)
 
-    def _random_expression_init(self):
-        self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'closed'), anchor='nw', tags=("image_closed",))
-        self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0, image=self.w.image.getimg('direct_v_cat', 'opened'), anchor='nw', tags=("image_open",))
-        self.w.grip.pack(side="right", fill="both", expand=True)
+    def next_rand(self):
+        self._random_expression_prod()
+        self._random_expression_cons()
 
-    def random_tick(self):
-        newexpr = random.choice(self.w.image.getexprlist())
-        while 'bad' in self.w.image.getmood(newexpr):
-            logging.debug(newexpr + " is bad mood expression, trying again")
-            newexpr = random.choice(self.w.image.getexprlist())
+    def _random_expression_prod(self):
+        eyes = ["direct", "right", "left"]
+        eyebrows = ["v", "up", "straight"]
+        mouth = ["cat", "sidesmile", "lightgrin", "sidestraight", "straight", "straightdown"]
 
-        for c in self.w.grip.find_withtag('image_closed'):
-            self.w.grip.itemconfig(c, image=self.w.image.getimg(newexpr, 'closed'))
-        for c in self.w.grip.find_withtag('image_open'):
-            self.w.grip.itemconfig(c, image=self.w.image.getimg(newexpr, 'opened'))
+        if self.w.face_queue.qsize() <= 1:
+            expr = dict(eyes=random.choice(eyes),
+                        eyebrows=random.choice(eyebrows),
+                        mouth=random.choice(mouth),
+                        time=random.randint(self.random_change_min, self.random_change_max))
+            self.w.face_queue.put(expr)
+            logging.debug('put expr ' + str(expr))
 
-        self.w.app.after(random.randint(self.random_change_min, self.random_change_max), self.random_tick)
+        self.w.app.after(100, self._random_expression_prod)
 
-    def forced_tick(self):
-        pass
+    def _random_expression_cons(self):
+        if self.w.face_queue.qsize() > 0:
+            expr = self.w.face_queue.get()
+            logging.debug('got ' + str(expr))
+            self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
+                                     image=self.w.image.getimg(expr['eyes'] + '_' + expr['eyebrows'] + '_' + expr['mouth'], 'closed'),
+                                     anchor='nw', tags=("image_closed",))
+            self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
+                                     image=self.w.image.getimg(expr['eyes'] + '_' + expr['eyebrows'] + '_' + expr['mouth'], 'opened'),
+                                     anchor='nw', tags=("image_open",))
+            self.w.grip.pack(side="right", fill="both", expand=True)
+            self.w.app.after(expr['time'], self._random_expression_cons)
+        else:
+            logging.debug('expr get queue is empty')
+            self.w.app.after(100, self._random_expression_cons)
