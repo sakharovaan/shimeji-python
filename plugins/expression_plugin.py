@@ -44,10 +44,10 @@ class Plugin(BasePlugin):
             expr = self.w.face_queue.get()
             logging.debug('got ' + str(expr))
             self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                     image=self.w.image.getimg(expr['eyes'] + '_' + expr['eyebrows'] + '_' + expr['mouth'], 'closed'),
+                                     image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'),
                                      anchor='nw', tags=("image_closed",))
             self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                     image=self.w.image.getimg(expr['eyes'] + '_' + expr['eyebrows'] + '_' + expr['mouth'], 'opened'),
+                                     image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'),
                                      anchor='nw', tags=("image_open",))
             self.w.grip.pack(side="right", fill="both", expand=True)
             self.w.app.after(expr['time'], self._random_expression_cons)
