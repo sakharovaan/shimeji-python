@@ -24,10 +24,10 @@ class Plugin(BasePlugin):
             logging.debug("random dialogue activated!")
             self._elapsed_seconds = 0
             self._say()
-            self.w.app.after(3000, self.tick)
+            self.after(3000, self.tick)
         else:
             self._elapsed_seconds += 3
-            self.w.app.after(3000, self.tick)
+            self.after(3000, self.tick)
         logging.debug("random dialogue " + str(self._elapsed_seconds))
 
     def _say(self):

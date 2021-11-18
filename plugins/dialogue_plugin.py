@@ -49,7 +49,7 @@ class Plugin(BasePlugin):
             self._render_text_init()
             self.w.voice_queue.put(text, block=False, timeout=None)
 
-        self.w.app.after(100, self.tick)
+        self.after(500, self.tick)
 
     def _render_text_init(self):
         """
@@ -64,7 +64,7 @@ class Plugin(BasePlugin):
                                                width=self.w.config['conffile']['dialogue']['width'] - self.w.config['conffile']['dialogue']['text']['offset']['xright'],
                                                fill='black', font=(self.w.config['conffile']['dialogue']['text']['font'],
                                                                    self.w.config['conffile']['dialogue']['text']['size']))
-        self.w.app.after(self._textspeed, self._render_text_tick)
+        self.after(self._textspeed, self._render_text_tick)
 
     def _render_text_tick(self):
         """
@@ -86,9 +86,9 @@ class Plugin(BasePlugin):
                 self._dialogue_desired_width = s[3] - s[1] + self._h_bottom
                 self._render_back_down()
 
-            self.w.app.after(self._textspeed, self._render_text_tick)
+            self.after(self._textspeed, self._render_text_tick)
         else:  # если у нас больше нет символов для отрисовки -- мы устанавливаем таймер на его скрытие
-            self.w.app.after(self.w.config['conffile']['dialogue']['wait'], self._hide_all)
+            self.after(self.w.config['conffile']['dialogue']['wait'], self._hide_all)
 
         self.w.grip.tag_raise("dialogue_text", "dialogue_image")
 

@@ -26,7 +26,7 @@ class Plugin(BasePlugin):
             except Exception as e:
                 logging.debug(e)
             finally:
-                self.w.app.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
+                self.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
         else:
             try:
                 self.w.grip.tag_raise("image_closed", "image_open")
@@ -34,4 +34,4 @@ class Plugin(BasePlugin):
             except Exception as e:
                 logging.debug(e)
             finally:
-                self.w.app.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)
+                self.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)

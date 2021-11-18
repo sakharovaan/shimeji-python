@@ -19,13 +19,14 @@ class Plugin(BasePlugin):
         self.random_change_min = self.w.config['conffile']['timings']['change_random_expression']['min']
 
         self._image_rendered = False  # image already rendered (itemconfig instead of create_image)
+        self._timer_set = 0  # for more precisive timer (tkinker timer tends to tick faster than we need)
+        self._timer_elapsed = 10  # a little bit bigger to init change on first use
 
-        self._random_expression_prod()
-        window.app.after(10, self._random_expression_cons)
-
-    def next_rand(self):
         self._random_expression_prod()
         self._random_expression_cons()
+
+    def next_rand(self):
+        self._timer_elapsed = self._timer_set*2
 
     def _random_expression_prod(self):
         eyes = ["direct", "right", "left"]
@@ -40,10 +41,10 @@ class Plugin(BasePlugin):
             self.w.face_queue.put(expr)
             logging.debug('put expr ' + str(expr))
 
-        self.w.app.after(100, self._random_expression_prod)
+        self.after(500, self._random_expression_prod)
 
     def _random_expression_cons(self):
-        if self.w.face_queue.qsize() > 0:
+        if self._timer_set <= self._timer_elapsed:
             logging.debug("expr queue size length is " + str(self.w.face_queue.qsize()))
             expr = self.w.face_queue.get()
             logging.debug('got ' + str(expr))
@@ -63,7 +64,11 @@ class Plugin(BasePlugin):
                 for c in self.w.grip.find_withtag('image_open'):
                     self.w.grip.itemconfig(c, image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'))
 
-            self.w.app.after(expr['time'], self._random_expression_cons)
+            self._timer_elapsed = 0
+            self._timer_set = expr['time']
+            logging.debug("Set timer on " + str(self._timer_set))
         else:
-            logging.debug('expr get queue is empty')
-            self.w.app.after(100, self._random_expression_cons)
+            # logging.debug("Set timer " + str(self._timer_set) + " elapsed " + str(self._timer_elapsed))
+            self._timer_elapsed += 250
+
+        self.after(250, self._random_expression_cons)

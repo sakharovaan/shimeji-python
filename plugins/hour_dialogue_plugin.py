@@ -21,5 +21,5 @@ class Plugin(BasePlugin):
             self.w.dialogue_queue.put(self.render_text('houly_dialogue', hour=now.hour), block=False, timeout=None)
         else:
             self._elapsed_seconds += 3
-        self.w.app.after(3000, self.tick)
-        logging.debug("hour dialogue " + str(self._elapsed_seconds))
+        self.after(3000, self.tick)
+        # logging.debug("hour dialogue " + str(self._elapsed_seconds))
