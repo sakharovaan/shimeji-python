@@ -26,7 +26,7 @@ class ImageLoader:
 
     def _loadimage(self, path, confsource="ghost"):
         if path in self._imagecache:
-            logging.debug("got " + path + " from cache")
+            logging.debug("got cached " + path)
             return self._imagecache[path]
         else:
             with self.RBGAImage(path) as im:
@@ -50,12 +50,11 @@ class ImageLoader:
 
     def _getfromcache(self, **kwargs):
         k = "_".join(["{}={}".format(*x) for x in kwargs.items()])
-        logging.debug("  ")
         if k not in self._imagebase:
             logging.debug("generating " + k)
             self._imagebase[k] = self._generate_image(**kwargs)
         else:
-            logging.debug("got " + k + " from cache")
+            logging.debug("got cached " + k)
 
         return self._imagebase[k]
 

@@ -109,5 +109,7 @@ class FloatingWindow(tk.Toplevel):
 
 
 logging.basicConfig(level=logging.DEBUG)
+logging.getLogger('comtypes').setLevel(level=logging.INFO)
+logging.getLogger('PIL').setLevel(level=logging.INFO)
 app=App()
 app.mainloop()

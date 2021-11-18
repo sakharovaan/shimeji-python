@@ -17,6 +17,9 @@ class Plugin(BasePlugin):
 
         self.random_change_max = self.w.config['conffile']['timings']['change_random_expression']['max']
         self.random_change_min = self.w.config['conffile']['timings']['change_random_expression']['min']
+
+        self._image_rendered = False  # image already rendered (itemconfig instead of create_image)
+
         self._random_expression_prod()
         window.app.after(10, self._random_expression_cons)
 
@@ -41,15 +44,25 @@ class Plugin(BasePlugin):
 
     def _random_expression_cons(self):
         if self.w.face_queue.qsize() > 0:
+            logging.debug("expr queue size length is " + str(self.w.face_queue.qsize()))
             expr = self.w.face_queue.get()
             logging.debug('got ' + str(expr))
-            self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                     image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'),
-                                     anchor='nw', tags=("image_closed",))
-            self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                     image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'),
-                                     anchor='nw', tags=("image_open",))
-            self.w.grip.pack(side="right", fill="both", expand=True)
+
+            if not self._image_rendered:
+                self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
+                                         image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'),
+                                         anchor='nw', tags=("image_closed",))
+                self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
+                                         image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'),
+                                         anchor='nw', tags=("image_open",))
+                self.w.grip.pack(side="right", fill="both", expand=True)
+                self._image_rendered = True
+            else:
+                for c in self.w.grip.find_withtag('image_closed'):
+                    self.w.grip.itemconfig(c, image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'))
+                for c in self.w.grip.find_withtag('image_open'):
+                    self.w.grip.itemconfig(c, image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'))
+
             self.w.app.after(expr['time'], self._random_expression_cons)
         else:
             logging.debug('expr get queue is empty')
