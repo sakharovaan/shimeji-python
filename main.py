@@ -57,7 +57,7 @@ class FloatingWindow(tk.Toplevel):
         }
 
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].next_rand)
+        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].force_next)
         self.menu.add_command(label="Show dialogue", command=self.plugins['random_dialogue_plugin']._say)
 
         config_menu = tk.Menu(self.menu)
@@ -88,7 +88,7 @@ class FloatingWindow(tk.Toplevel):
 
     def menu_callback(self, element):
         if element == "exit":
-            self.do_exit()
+            self.plugins['start_stop_plugin'].do_stop()
         else:
             raise
 
@@ -102,10 +102,6 @@ class FloatingWindow(tk.Toplevel):
         x = self.winfo_x() + deltax
         y = self.winfo_y() + deltay
         self.geometry(f"+{x}+{y}")
-
-    def do_exit(self):
-        self.config['exit_initiated'] = True
-        self.app.destroy()
 
 
 logging.basicConfig(level=logging.DEBUG)

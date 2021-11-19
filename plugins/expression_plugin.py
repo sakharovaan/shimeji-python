@@ -1,9 +1,3 @@
-# нужно будет для фраз делать expression force, пусть это будет в основном классе
-# если force, то этот плагин не срабатывает, потом тот плагин который поставил force должен его снять
-# force будет очевидно для фраз.
-# может сделать force измнения в этом же плагине по другому таймеру,
-# который будет опрашивать изменения в основном словаре (когда он появится)
-
 import random
 import logging
 import queue
@@ -25,7 +19,7 @@ class Plugin(BasePlugin):
         self._random_expression_prod()
         self._random_expression_cons()
 
-    def next_rand(self):
+    def force_next(self):
         self._timer_elapsed = self._timer_set*2
 
     def _random_expression_prod(self):

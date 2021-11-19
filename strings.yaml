@@ -31,3 +31,7 @@ templates:
     - "Привет, {{username}}! Ты пока не добавил ни одной толковой фразы, но я верю в тебя!"
   houly_dialogue:
     - "Сейчас {{ hours[hour] }}"
+  on_start_phrazes:
+    - "Привет, {{username}}!"
+  on_stop_phrazes:
+    - "Пока, {{username}}!"

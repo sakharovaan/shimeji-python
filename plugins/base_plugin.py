@@ -7,6 +7,7 @@ class BasePlugin:
     def __init__(self, window):
         self.w = window
         self.j2_env = Environment(loader=FunctionLoader(lambda t: random.choice(self.w.config['strings']['templates'].get(t, []))))
+        self.ready_to_exit = True
 
     def tick(self):
         self.after(100, self.tick)
@@ -25,8 +26,11 @@ class BasePlugin:
         #     logging.debug('Putting ' + str(func) + ' after ' + str(self.mstos(time)) + ' sec')
         self.w.app.after(time, func, *args, **kwargs)
 
+    def on_exit(self):
+        pass
+
 
 # just a dummy for not screwing plugin loading system
 class Plugin(BasePlugin):
     def __init__(self, window):
-        pass
+        super(Plugin, self).__init__(window)

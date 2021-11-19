@@ -21,6 +21,7 @@ class Plugin(BasePlugin):
         self._h_bottom_id = None
 
         self._dialogue_is_shown = False
+        self.ready_to_exit = False
 
         window.app.after(100, self.tick)
 
@@ -128,3 +129,9 @@ class Plugin(BasePlugin):
         for c in self.w.grip.find_withtag('dialogue_all'):
             self.w.grip.delete(c)
         self._clear()
+
+    def on_exit(self):
+        if not self.w.dialogue_queue.empty() or self._dialogue_is_shown:
+            self.after(500, self.on_exit)
+        else:
+            self.ready_to_exit = True
