@@ -30,7 +30,6 @@ class FloatingWindow(tk.Toplevel):
         self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.config = dict(
-            exit_initiated=False,
             voice_enabled=tk.BooleanVar(),
             conffile={},
             strings={}

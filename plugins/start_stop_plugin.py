@@ -8,14 +8,15 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(window)
 
         self.on_start()
+        self._exiting = False
 
     def on_start(self):
         self.w.dialogue_queue.put(self.render_text('on_start_phrazes'), block=False, timeout=None)
 
     def do_stop(self):
-        if not self.w.config['exit_initiated']:
+        if not self._exiting:
             self.w.dialogue_queue.put(self.render_text('on_stop_phrazes'), block=False, timeout=None)
-            self.w.config['exit_initiated'] = True
+            self._exiting = True
             for plugin in self.w.plugins.values():
                 plugin.on_exit()
 

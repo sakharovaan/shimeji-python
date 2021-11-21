@@ -21,7 +21,13 @@ class Plugin(BasePlugin):
         self._h_bottom_id = None
 
         self._dialogue_is_shown = False
+        self._dialogue_is_fully_rendered = True
+        # чтобы достоверно проверять, что диалог отрисовался, прежде чем скрывать
+        # если диалог не показывается, стоит True (то есть нам не нужно ничего больше дорисовывать)
+        self._dialogue_is_shown_hide_id = False  # чтобы можно было принудительно закрывать диалог
+
         self.ready_to_exit = False
+        self._exiting = False
 
         window.app.after(100, self.tick)
 
@@ -37,6 +43,7 @@ class Plugin(BasePlugin):
         # на которой нужно отрисосвывать следующий фрагмент
         self._h_bottom_id = None  # это как флаг что у нас отрисован низ для динамического размера
         self._dialogue_is_shown = False  # чтобы отрисовывать только один диалог одновременно
+        self._dialogue_is_fully_rendered = True
 
     def tick(self):
         """
@@ -45,6 +52,7 @@ class Plugin(BasePlugin):
         if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown:
             text = self.w.dialogue_queue.get(block=False)
 
+            self._dialogue_is_fully_rendered = False
             self._dialogue_is_shown = True
             self._text_to_render = iter(str(text))
             self._render_text_init()
@@ -89,7 +97,8 @@ class Plugin(BasePlugin):
 
             self.after(self._textspeed, self._render_text_tick)
         else:  # если у нас больше нет символов для отрисовки -- мы устанавливаем таймер на его скрытие
-            self.after(self.w.config['conffile']['dialogue']['wait'], self._hide_all)
+            self._dialogue_is_fully_rendered = True
+            self._dialogue_is_shown_hide_id = self.after(self.w.config['conffile']['dialogue']['wait'], self._hide_all)
 
         self.w.grip.tag_raise("dialogue_text", "dialogue_image")
 
@@ -131,7 +140,16 @@ class Plugin(BasePlugin):
         self._clear()
 
     def on_exit(self):
-        if not self.w.dialogue_queue.empty() or self._dialogue_is_shown:
+        if self._dialogue_is_shown and self._dialogue_is_fully_rendered:
+            try:
+                self.cancel(self._dialogue_is_shown_hide_id)
+            except Exception as e:
+                logging.debug(e)
+            self._hide_all()
+
+        if not all((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)):
+            logging.debug("dialogue " + str((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)))
+            self._exiting = True
             self.after(500, self.on_exit)
         else:
             self.ready_to_exit = True

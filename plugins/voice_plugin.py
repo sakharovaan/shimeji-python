@@ -13,6 +13,9 @@ class Plugin(BasePlugin):
         self._voice_thr = None
         window.app.after(100, self.tick)
 
+        self._exiting = False
+        self.ready_to_exit = False
+
     def tick(self):
         self._voice_thr = threading.Thread(target=self._thread)
         self._voice_thr.start()
@@ -27,10 +30,15 @@ class Plugin(BasePlugin):
         self._engine.setProperty('volume', self.w.config['conffile']['voice']['volume'] / 10)
         self._engine.setProperty('voice', self.w.config['conffile']['voice']['voice'])
 
-        while not self.w.config['exit_initiated']:
+        while not self._exiting:
             if not self.w.voice_queue.empty():
                 text = self.w.voice_queue.get(block=False)
                 if self.w.config['voice_enabled'].get():
                     self._engine.say('<pitch middle="' + str(self.w.config['conffile']['voice']['pitch']) + '">' + text + '</pitch>')
                     self._engine.runAndWait()
             time.sleep(0.1)
+        else:
+            self.ready_to_exit = True
+
+    def on_exit(self):
+        self._exiting = True

@@ -24,7 +24,10 @@ class BasePlugin:
     def after(self, time, func, *args, **kwargs):
         # if 'cons' in str(func):
         #     logging.debug('Putting ' + str(func) + ' after ' + str(self.mstos(time)) + ' sec')
-        self.w.app.after(time, func, *args, **kwargs)
+        return self.w.app.after(time, func, *args, **kwargs)
+
+    def cancel(self, *args, **kwargs):
+        return self.w.app.after_cancel(*args, **kwargs)
 
     def on_exit(self):
         pass
