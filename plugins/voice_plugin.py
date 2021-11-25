@@ -14,6 +14,7 @@ class Plugin(BasePlugin):
         window.app.after(100, self.tick)
 
         self._exiting = False
+        self._final_phrase_said = False  # костыль чтобы при выходе всегда получать последнюю фразу из очереди
         self.ready_to_exit = False
 
     def tick(self):
@@ -30,14 +31,20 @@ class Plugin(BasePlugin):
         self._engine.setProperty('volume', self.w.config['conffile']['voice']['volume'] / 10)
         self._engine.setProperty('voice', self.w.config['conffile']['voice']['voice'])
 
-        while not self._exiting:
+        while not self._exiting or not self._final_phrase_said:
             if not self.w.voice_queue.empty():
                 text = self.w.voice_queue.get(block=False)
+                logging.debug('voice queue get ' + text)
                 if self.w.config['voice_enabled'].get():
                     self._engine.say('<pitch middle="' + str(self.w.config['conffile']['voice']['pitch']) + '">' + text + '</pitch>')
                     self._engine.runAndWait()
+
+                    if not self._final_phrase_said and self._exiting:
+                        self._final_phrase_said = True
+
             time.sleep(0.1)
         else:
+            logging.debug('voice exit ' + str((self._exiting, self.w.voice_queue.empty(), self._final_phrase_said)))
             self.ready_to_exit = True
 
     def on_exit(self):
