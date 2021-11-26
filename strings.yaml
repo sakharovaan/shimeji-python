@@ -32,6 +32,6 @@ templates:
   houly_dialogue:
     - "Сейчас {{ hours[hour] }}"
   on_start_phrazes:
-    - "Привет, {{username}}!"
+    - "{% expr forward %} Привет, {{username}}!"
   on_stop_phrazes:
     - "Пока, {{username}}!"

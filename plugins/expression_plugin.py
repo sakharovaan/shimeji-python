@@ -27,7 +27,7 @@ class Plugin(BasePlugin):
         eyebrows = ["v", "up", "straight"]
         mouth = ["cat", "sidesmile", "lightgrin", "sidestraight", "straight", "straightdown"]
 
-        if self.w.face_queue.qsize() <= 1:
+        if self.w.face_queue.empty():
             expr = dict(eyes=random.choice(eyes),
                         eyebrows=random.choice(eyebrows),
                         mouth=random.choice(mouth),
@@ -40,7 +40,13 @@ class Plugin(BasePlugin):
     def _random_expression_cons(self):
         if self._timer_set <= self._timer_elapsed:
             logging.debug("expr queue size length is " + str(self.w.face_queue.qsize()))
-            expr = self.w.face_queue.get()
+
+            try:
+                expr = self.w.face_queue.get(block=False, timeout=None)
+            except queue.Empty:
+                self.after(250, self._random_expression_cons)
+                return
+
             logging.debug('got ' + str(expr))
 
             if not self._image_rendered:
