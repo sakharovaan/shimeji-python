@@ -12,10 +12,9 @@ class Plugin(BasePlugin):
         self._timer_set = 0  # for more precisive timer (tkinker timer tends to tick faster than we need)
         self._timer_elapsed = 10  # a little bit bigger to init change on first use
 
-        self._random_expression_cons()
-
     def on_start(self):
-        self._random_expression_prod()
+        self._random_expression_prod()  # FIXME cons должен быть в init, чтобы стартовая эмоция первой отображалась -- но без синхронизации там сначала белый квадрат
+        self._random_expression_cons()
 
     def force_next(self):
         self._timer_elapsed = self._timer_set*2

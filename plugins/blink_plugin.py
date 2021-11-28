@@ -37,3 +37,5 @@ class Plugin(BasePlugin):
                     logging.debug(e)
                 finally:
                     self.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)
+        else:
+            self.w.app.after(50, self.tick)
