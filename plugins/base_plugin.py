@@ -1,25 +1,60 @@
-from jinja2 import Environment, FunctionLoader, nodes
-from jinja2.ext import Extension
-from jinja2.runtime import Undefined
 import random
 import logging
+from collections import OrderedDict
+
+from jinja2 import Environment, FunctionLoader, nodes
+from jinja2.ext import Extension
+
+
+class Expression:
+    def __init__(self, w, expr_name, time):
+        """
+        :param w: w (FloatingWindow)
+        :param expr_name: строка с описанием эмоции (expressions в конфиге)
+        :param time: число (мсек) или строка (timings в конфиге)
+        """
+        self.w = w
+        self.cur_expr = self.w.config['conffile']['expressions'][expr_name]
+
+        self.expr_dict = OrderedDict()
+        for k, v in self.cur_expr.items():
+            self.expr_dict[k] = random.choice(v)
+
+        if type(time) is int:
+            self.expr_dict['time'] = time
+        elif type(time) is str:
+            self.expr_dict['time'] = random.randint(self.w.config['conffile']['timings'][time]['min'],
+                                                    self.w.config['conffile']['timings'][time]['max'])
+        else:
+            raise Exception
+
+    def as_dict(self):
+        return self.expr_dict
+
+    def __str__(self):
+        return str(self.expr_dict)
+
+    def __getattr__(self, item):
+        return self.expr_dict[item]
 
 
 class ExpressionTag(Extension):
     tags = {"expr"}
 
     def parse(self, parser):
+        # если мы пишем {% expr 'fefefe' %}, то component будет nodes.Const и передаваться в _render как string
+        # если {% expr fefefe %}, то это будет Name, который потом будет резолвиться и передаваться в _render будет объект с именем fefefe
         lineno = parser.stream.expect("name:expr").lineno
-        component = parser.parse_expression()
+        args = [nodes.Const(parser.parse_expression().name)]
 
-        return nodes.CallBlock(self.call_method('_render', args=[component], dyn_args=component), [], [], []).set_lineno(lineno)
+        return nodes.Output([nodes.MarkSafeIfAutoescape(self.call_method('_render', args))]).set_lineno(lineno)
 
     def _render(self, component, *args, **kwargs):
-        logging.debug(component._undefined_name)
+        self.environment.plugin.w.face_queue.put(Expression(self.environment.plugin.w, component, 45000),
+                                                 block=False, timeout=None)  # FIXME брать время из 2 опц аргумента тэга
+        self.environment.plugin.w.plugins['expression_plugin'].force_next()  # FIXME через диспетчер вызывать
 
-        self.environment.plugin.w.face_queue.put(dict(eyes="direct", eyebrows="up", mouth="cat", time=45000),
-                                                 block=False,
-                                                 timeout=None)
+        logging.debug('Forcing expression: ' + component + ' for ' + str(45000))
         return ''
 
 

@@ -3,6 +3,17 @@
 background:
   file: 'static/ghost/L01,R1,C1,background,hidden,normal,255.png'
 
+expressions:
+  forward_smile:
+    eyes:
+      - direct
+    eyebrows: ['v', 'up', 'straight']
+    mouth: ['cat', 'sidesmile', 'lightgrin']
+  random_emotion:
+    eyes: ["direct", "right", "left"]
+    eyebrows: ["v", "up", "straight"]
+    mouth: ["cat", "sidesmile", "lightgrin", "sidestraight", "straight", "straightdown"]
+
 elements:
   eyes:
     direct:

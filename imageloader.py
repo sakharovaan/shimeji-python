@@ -58,8 +58,8 @@ class ImageLoader:
 
         return self._imagebase[k]
 
-    def getimg(self, **kwargs):
-        return self._getfromcache(**kwargs)
+    def getimg(self, expression, **kwargs):
+        return self._getfromcache(**(expression.as_dict() | kwargs))
 
     @staticmethod
     def RBGAImage(path):
