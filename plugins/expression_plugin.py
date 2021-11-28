@@ -42,18 +42,18 @@ class Plugin(BasePlugin):
 
             if not self.image_rendered:
                 self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                         image=self.w.image.getimg(expr, state='close'),
+                                         image=self.w.image.getimg(expr, eyes_state='close'),
                                          anchor='nw', tags=("image_closed",))
                 self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
-                                         image=self.w.image.getimg(expr, state='open'),
+                                         image=self.w.image.getimg(expr, eyes_state='open'),
                                          anchor='nw', tags=("image_open",))
                 self.w.grip.pack(side="right", fill="both", expand=True)
                 self.image_rendered = True
             else:
                 for c in self.w.grip.find_withtag('image_closed'):
-                    self.w.grip.itemconfig(c, image=self.w.image.getimg(expr, state='close'))
+                    self.w.grip.itemconfig(c, image=self.w.image.getimg(expr, eyes_state='close'))
                 for c in self.w.grip.find_withtag('image_open'):
-                    self.w.grip.itemconfig(c, image=self.w.image.getimg(expr, state='open'))
+                    self.w.grip.itemconfig(c, image=self.w.image.getimg(expr, eyes_state='open'))
 
             self._timer_elapsed = 0
             self._timer_set = expr.time

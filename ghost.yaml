@@ -1,7 +1,7 @@
 ---
 
 background:
-  file: 'static/ghost/L01,R1,C1,background,hidden,normal,255.png'
+  file: 'background'
 
 expressions:
   forward_smile:
@@ -14,75 +14,80 @@ expressions:
     eyebrows: ["v", "up", "straight"]
     mouth: ["cat", "sidesmile", "lightgrin", "sidestraight", "straight", "straightdown"]
 
+images:
+  search:
+    path: 'static/ghost'
+    regex: '^.*?,.*?,.*?,(?P<name>.*?),.*$'
+
 elements:
   eyes:
     direct:
       open:
         file:
-          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
-          - 'static/ghost/L07,R1,C1,eye_direct,visible,normal,255.png'
+          - 'eye_under'
+          - 'eye_direct'
       close:
         file: []
     right:
       open:
         file:
-          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
-          - 'static/ghost/L06,R1,C1,eye_right,hidden,normal,255.png'
+          - 'eye_under'
+          - 'eye_right'
       close:
         file: [ ]
     left:
       open:
         file:
-          - 'static/ghost/L05,R1,C1,eye_under,hidden,normal,255.png'
-          - 'static/ghost/L08,R1,C1,eye_left,hidden,normal,255.png'
+          - 'eye_under'
+          - 'eye_left'
       close:
         file: [ ]
   eyebrows:
     v:
       file:
-        - 'static/ghost/L04,R1,C1,eyebrows_v,hidden,normal,255.png'
+        - 'eyebrows_v'
     up:
       file:
-        - 'static/ghost/L02,R1,C1,eyebrows_up,hidden,normal,255.png'
+        - 'eyebrows_up'
     straight:
       file:
-        - 'static/ghost/L03,R1,C1,eyebrows_straight,hidden,normal,255.png'
+        - 'eyebrows_straight'
   mouth:
     cat:
       file:
-        - 'static/ghost/L17,R1,C1,mouth_cat,hidden,normal,255.png'
+        - 'mouth_cat'
     triangle:
       mood: ['bad']
       file:
-        - 'static/ghost/L09,R1,C1,mouth_triangle,hidden,normal,255.png'
+        - 'mouth_triangle'
     sidesmile:
       mood: ['good']
       file:
-        - 'static/ghost/L10,R1,C1,mouth_sidesmile,hidden,normal,255.png'
+        - 'mouth_sidesmile'
     lightgrin:
       mood: ['good']
       file:
-        - 'static/ghost/L11,R1,C1,mouth_lightgrin,hidden,normal,255.png'
+        - 'mouth_lightgrin'
     sidestraight:
       mood: ['neutral']
       file:
-        - 'static/ghost/L12,R1,C1,mouth_sidestraight,hidden,normal,255.png'
+        - 'mouth_sidestraight'
     mediumdown:
       mood: ['bad']
       file:
-        - 'static/ghost/L13,R1,C1,mouth_direct_mediumdown,hidden,normal,255.png'
+        - 'mouth_direct_mediumdown'
     straight:
       mood: ['neutral']
       file:
-        - 'static/ghost/L15,R1,C1,mouth_direct_straight,hidden,normal,255.png'
+        - 'mouth_direct_straight'
     straightdown:
       mood: ['neutral']
       file:
-        - 'static/ghost/L14,R1,C1,mouth_direct_straightdown,hidden,normal,255.png'
+        - 'mouth_direct_straightdown'
     side_down:
       mood: ['bad']
       file:
-        - 'static/ghost/L16,R1,C1,mouth_side_down,hidden,normal,255.png'
+        - 'mouth_side_down'
 timings:
   blink:
     open:

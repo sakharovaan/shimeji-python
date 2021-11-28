@@ -17,10 +17,10 @@ class Expression:
             self.expr_dict[k] = random.choice(v)
 
         if type(time) is int:
-            self.expr_dict['time'] = time
+            self.time = time
         elif type(time) is str:
-            self.expr_dict['time'] = random.randint(self.w.config['conffile']['timings'][time]['min'],
-                                                    self.w.config['conffile']['timings'][time]['max'])
+            self.time = random.randint(self.w.config['conffile']['timings'][time]['min'],
+                                       self.w.config['conffile']['timings'][time]['max'])
         else:
             raise Exception
 
@@ -28,7 +28,7 @@ class Expression:
         return self.expr_dict
 
     def __str__(self):
-        return str(self.expr_dict)
+        return str(self.expr_dict) + " duration " + str(self.time)
 
     def __getattr__(self, item):
         return self.expr_dict[item]
