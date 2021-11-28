@@ -36,9 +36,9 @@ class Plugin(BasePlugin):
             self.w.app.after(100, self.on_start)
             return
         else:
-            # self._h_top = self.w.image.getdlimg('top').height()
-            # self._h_middle = self.w.image.getdlimg('middle').height()
-            # self._h_bottom = self.w.image.getdlimg('bottom').height()
+            self._h_top = self.w.image.getdlimg('top').height()
+            self._h_middle = self.w.image.getdlimg('middle').height()
+            self._h_bottom = self.w.image.getdlimg('bottom').height()
             self.w.app.after(100, self.tick)
 
     def _clear(self):
