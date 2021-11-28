@@ -46,12 +46,15 @@ elements:
     v:
       file:
         - 'eyebrows_v'
+        - 'eye_top_narrow'
     up:
       file:
         - 'eyebrows_up'
+        - 'eye_top_narrow'
     straight:
       file:
         - 'eyebrows_straight'
+        - 'eye_top_narrow'
   mouth:
     cat:
       file:
