@@ -1,6 +1,6 @@
 import logging
 
-from .base_plugin import BasePlugin
+from plugins.base_plugin import BasePlugin
 
 
 class Plugin(BasePlugin):
@@ -9,11 +9,11 @@ class Plugin(BasePlugin):
         self._exiting = False
 
     def on_start(self):
-        self.w.dialogue_queue.put(self.render_text('on_start_phrazes'), block=False, timeout=None)
+        self.w.run_dialogue('on_start_phrazes')
 
     def do_stop(self):
         if not self._exiting:
-            self.w.dialogue_queue.put(self.render_text('on_stop_phrazes'), block=False, timeout=None)
+            self.w.run_dialogue('on_stop_phrazes')
             self._exiting = True
             self.w.dispatch_signal('on_stop')
 

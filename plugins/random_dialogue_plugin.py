@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 import random
 
-from .base_plugin import BasePlugin
+from plugins.base_plugin import BasePlugin
 
 
 class Plugin(BasePlugin):
@@ -31,5 +31,4 @@ class Plugin(BasePlugin):
         logging.debug("random dialogue " + str(self._elapsed_seconds))
 
     def do_random_dialogue(self):
-        self.w.dialogue_queue.put(self.render_text('random_phrazes'), block=False, timeout=None)
-        self.w.dispatch_signal('do_next_dialogue')
+        self.w.run_dialogue('random_phrazes')

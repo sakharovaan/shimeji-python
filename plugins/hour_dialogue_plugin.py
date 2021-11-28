@@ -1,7 +1,7 @@
 from datetime import datetime
 import logging
 
-from .base_plugin import BasePlugin
+from plugins.base_plugin import BasePlugin
 
 
 class Plugin(BasePlugin):
@@ -19,7 +19,7 @@ class Plugin(BasePlugin):
         if now.minute == 0 and self._elapsed_seconds > 60:  # set to 'if True' for debugging
             logging.debug("hour dialogue activated! " + str(now.hour))
             self._elapsed_seconds = 0
-            self.w.dialogue_queue.put(self.render_text('houly_dialogue', hour=now.hour), block=False, timeout=None)
+            self.w.run_dialogue('houly_dialogue', hour=now.hour)
         else:
             self._elapsed_seconds += 3
         self.after(3000, self.tick)

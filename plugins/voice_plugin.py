@@ -3,7 +3,7 @@ import pyttsx3
 import threading
 import time
 
-from .base_plugin import BasePlugin
+from plugins.base_plugin import BasePlugin
 
 
 class Plugin(BasePlugin):

@@ -2,7 +2,8 @@ import random
 import logging
 import queue
 
-from .base_plugin import BasePlugin, Expression
+from plugins.base_plugin import BasePlugin
+from components.expression import Expression
 
 
 class Plugin(BasePlugin):

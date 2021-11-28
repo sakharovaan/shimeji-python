@@ -1,7 +1,7 @@
 import tkinter as tk
 import logging
 
-from .base_plugin import BasePlugin
+from plugins.base_plugin import BasePlugin
 
 
 class Plugin(BasePlugin):
@@ -60,13 +60,14 @@ class Plugin(BasePlugin):
         Основной коллбек на асинхронный цикл, проверяет, пуста ли очередь сообщений и инициирует диалог
         """
         if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown and self.w.plugins['expression_plugin'].image_rendered:
-            text = self.w.dialogue_queue.get(block=False)
+            text = self.w.dialogue_queue.get(block=False).strip()
 
-            self._dialogue_is_fully_rendered = False
-            self._dialogue_is_shown = True
-            self._text_to_render = iter(str(text))
-            self._render_text_init()
-            self.w.voice_queue.put(text, block=False, timeout=None)
+            if len(text) > 0:
+                self._dialogue_is_fully_rendered = False
+                self._dialogue_is_shown = True
+
+                self._text_to_render = iter(str(text))
+                self._render_text_init()
 
         self.after(500, self.tick)
 

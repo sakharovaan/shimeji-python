@@ -1,14 +1,39 @@
-import logging
 import queue
 import importlib
 import pkgutil
 import yaml
 from functools import partial
+import random
+import logging
+
+from jinja2 import Environment, FunctionLoader, nodes
+from jinja2.ext import Extension
 
 import tkinter as tk
 from PIL import Image
 
-from imageloader import ImageLoader
+from components.imageloader import ImageLoader
+from components.expression import Expression
+
+
+class ExpressionTag(Extension):
+    tags = {"expr"}
+
+    def parse(self, parser):
+        # если мы пишем {% expr 'fefefe' %}, то component будет nodes.Const и передаваться в _render как string
+        # если {% expr fefefe %}, то это будет Name, который потом будет резолвиться и передаваться в _render будет объект с именем fefefe
+        lineno = parser.stream.expect("name:expr").lineno
+        args = [nodes.Const(parser.parse_expression().name)]
+
+        return nodes.Output([nodes.MarkSafeIfAutoescape(self.call_method('_render', args))]).set_lineno(lineno)
+
+    def _render(self, component, *args, **kwargs):
+        self.environment.plugin.face_queue.put(Expression(self.environment.plugin, component, 45000),
+                                                 block=False, timeout=None)  # FIXME брать время из 2 опц аргумента тэга
+        self.environment.plugin.dispatch_signal('do_next_expression')
+
+        logging.debug('Forcing expression: ' + component + ' for ' + str(45000))
+        return ''
 
 
 class App(tk.Tk):
@@ -43,8 +68,12 @@ class ShimejiCore:
         self.face_queue = queue.LifoQueue()
         self.plugins = {}
 
+        self._j2_loader = FunctionLoader(lambda t: random.choice(self.config['strings']['templates'].get(t, [])))
+        self.j2_env = Environment(loader=self._j2_loader, extensions=[ExpressionTag])
+        self.j2_env.plugin = self
+
         self._plugins_modules = {
-            name: importlib.import_module('.' + name, package='plugins')
+            name: importlib.import_module('plugins.' + name, package='.')
             for finder, name, ispkg
             in pkgutil.iter_modules(path=['plugins'])
         }
@@ -59,6 +88,16 @@ class ShimejiCore:
     def dispatch_signal(self, signal_name, *args, **kwargs):
         for plugin in self.plugins.values():
             getattr(plugin, signal_name)(*args, **kwargs)
+
+    def run_dialogue(self, text_key, *args, **kwargs):
+        text = self.render_text(text_key, *args, **kwargs)
+
+        self.dialogue_queue.put(text, block=False, timeout=None)
+        self.voice_queue.put(text, block=False, timeout=None)
+        self.dispatch_signal('do_next_dialogue')
+
+    def render_text(self, text_id, *args, **kwargs):
+        return self.j2_env.get_template(text_id).render(**(self.config['strings']['variables'] | kwargs))
 
     @staticmethod
     def RBGAImage(path):
