@@ -15,9 +15,11 @@ class Plugin(BasePlugin):
         self._textspeed = self.w.config['conffile']['dialogue']['text']['speed']
         self._dialogue_desired_width = 40
         self._h_cursor = 0
-        self._h_top = self.w.image.getdlimg('top').height()
-        self._h_middle = self.w.image.getdlimg('middle').height()
-        self._h_bottom = self.w.image.getdlimg('bottom').height()
+
+        self._h_top = 0
+        self._h_middle = 0
+        self._h_bottom = 0
+
         self._h_bottom_id = None
 
         self._dialogue_is_shown = False
@@ -29,7 +31,15 @@ class Plugin(BasePlugin):
         self.ready_to_exit = False
         self._exiting = False
 
-        window.app.after(100, self.tick)
+    def on_start(self):
+        if not self.w.plugins['expression_plugin'].image_rendered:
+            self.w.app.after(100, self.on_start)
+            return
+        else:
+            # self._h_top = self.w.image.getdlimg('top').height()
+            # self._h_middle = self.w.image.getdlimg('middle').height()
+            # self._h_bottom = self.w.image.getdlimg('bottom').height()
+            self.w.app.after(100, self.tick)
 
     def _clear(self):
         """
@@ -49,7 +59,7 @@ class Plugin(BasePlugin):
         """
         Основной коллбек на асинхронный цикл, проверяет, пуста ли очередь сообщений и инициирует диалог
         """
-        if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown:
+        if not self.w.dialogue_queue.empty() and not self._dialogue_is_shown and self.w.plugins['expression_plugin'].image_rendered:
             text = self.w.dialogue_queue.get(block=False)
 
             self._dialogue_is_fully_rendered = False
@@ -139,7 +149,7 @@ class Plugin(BasePlugin):
             self.w.grip.delete(c)
         self._clear()
 
-    def on_exit(self):
+    def on_stop(self):
         if self._dialogue_is_shown and self._dialogue_is_fully_rendered:
             try:
                 self.cancel(self._dialogue_is_shown_hide_id)
@@ -150,6 +160,6 @@ class Plugin(BasePlugin):
         if not all((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)):
             logging.debug("dialogue " + str((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)))
             self._exiting = True
-            self.after(500, self.on_exit)
+            self.after(500, self.on_stop)
         else:
             self.ready_to_exit = True

@@ -12,12 +12,14 @@ class Plugin(BasePlugin):
         self.random_change_max = self.w.config['conffile']['timings']['change_random_expression']['max']
         self.random_change_min = self.w.config['conffile']['timings']['change_random_expression']['min']
 
-        self._image_rendered = False  # image already rendered (itemconfig instead of create_image)
+        self.image_rendered = False  # image already rendered (itemconfig instead of create_image)
         self._timer_set = 0  # for more precisive timer (tkinker timer tends to tick faster than we need)
         self._timer_elapsed = 10  # a little bit bigger to init change on first use
 
-        self._random_expression_prod()
         self._random_expression_cons()
+
+    def on_start(self):
+        self._random_expression_prod()
 
     def force_next(self):
         self._timer_elapsed = self._timer_set*2
@@ -49,7 +51,7 @@ class Plugin(BasePlugin):
 
             logging.debug('got ' + str(expr))
 
-            if not self._image_rendered:
+            if not self.image_rendered:
                 self.w.grip.create_image(self.w.config['conffile']['ghost']['width'], 0,
                                          image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'),
                                          anchor='nw', tags=("image_closed",))
@@ -57,7 +59,7 @@ class Plugin(BasePlugin):
                                          image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='open'),
                                          anchor='nw', tags=("image_open",))
                 self.w.grip.pack(side="right", fill="both", expand=True)
-                self._image_rendered = True
+                self.image_rendered = True
             else:
                 for c in self.w.grip.find_withtag('image_closed'):
                     self.w.grip.itemconfig(c, image=self.w.image.getimg(eyes=expr['eyes'], eyebrows=expr['eyebrows'], mouth=expr['mouth'], state='close'))

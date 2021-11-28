@@ -71,6 +71,8 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
 
+        self.plugins['start_stop_plugin'].do_start()
+
     @staticmethod
     def RBGAImage(path):
         return Image.open(path).convert("RGBA")

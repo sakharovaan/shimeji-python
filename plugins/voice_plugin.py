@@ -11,11 +11,13 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(window)
 
         self._voice_thr = None
-        window.app.after(100, self.tick)
 
         self._exiting = False
         self._final_phrase_said = False  # костыль чтобы при выходе всегда получать последнюю фразу из очереди
         self.ready_to_exit = False
+
+    def on_start(self):
+        self.w.app.after(100, self.tick)
 
     def tick(self):
         self._voice_thr = threading.Thread(target=self._thread)
@@ -47,5 +49,5 @@ class Plugin(BasePlugin):
             logging.debug('voice exit ' + str((self._exiting, self.w.voice_queue.empty(), self._final_phrase_said)))
             self.ready_to_exit = True
 
-    def on_exit(self):
+    def on_stop(self):
         self._exiting = True

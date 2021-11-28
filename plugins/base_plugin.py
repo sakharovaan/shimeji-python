@@ -51,7 +51,10 @@ class BasePlugin:
     def cancel(self, *args, **kwargs):
         return self.w.app.after_cancel(*args, **kwargs)
 
-    def on_exit(self):
+    def on_stop(self):  # когда хотим выйти, все плагины получают этот коллбек
+        pass
+
+    def on_start(self):  # когда все плагины инициализировались (после __init__), все плагины получают этот коллбек
         pass
 
 

@@ -16,22 +16,24 @@ class Plugin(BasePlugin):
         self.blink_close_min = self.w.config['conffile']['timings']['blink']['closed']['min']
         self.blink_close_max = self.w.config['conffile']['timings']['blink']['closed']['max']
 
-        window.app.after(10, self.tick)
+    def on_start(self):
+        self.w.app.after(10, self.tick)
 
     def tick(self):
-        if self.blinked:
-            try:
-                self.w.grip.tag_raise("image_open", "image_closed")
-                self.blinked = False
-            except Exception as e:
-                logging.debug(e)
-            finally:
-                self.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
-        else:
-            try:
-                self.w.grip.tag_raise("image_closed", "image_open")
-                self.blinked = True
-            except Exception as e:
-                logging.debug(e)
-            finally:
-                self.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)
+        if self.w.plugins['expression_plugin'].image_rendered:
+            if self.blinked:
+                try:
+                    self.w.grip.tag_raise("image_open", "image_closed")
+                    self.blinked = False
+                except Exception as e:
+                    logging.debug(e)
+                finally:
+                    self.after(random.randint(self.blink_open_min, self.blink_open_max), self.tick)
+            else:
+                try:
+                    self.w.grip.tag_raise("image_closed", "image_open")
+                    self.blinked = True
+                except Exception as e:
+                    logging.debug(e)
+                finally:
+                    self.after(random.randint(self.blink_close_min, self.blink_close_max), self.tick)

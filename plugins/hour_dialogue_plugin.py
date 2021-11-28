@@ -11,7 +11,8 @@ class Plugin(BasePlugin):
 
         self._elapsed_seconds = 0
 
-        window.app.after(3000, self.tick)
+    def on_start(self):
+        self.w.app.after(3000, self.tick)
 
     def tick(self):
         now = datetime.now()
