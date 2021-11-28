@@ -149,7 +149,7 @@ class Plugin(BasePlugin):
             self.w.grip.delete(c)
         self._clear()
 
-    def on_stop(self):
+    def do_next_dialogue(self):
         if self._dialogue_is_shown and self._dialogue_is_fully_rendered:
             try:
                 self.cancel(self._dialogue_is_shown_hide_id)
@@ -157,6 +157,8 @@ class Plugin(BasePlugin):
                 logging.debug(e)
             self._hide_all()
 
+    def on_stop(self):
+        self.do_next_dialogue()
         if not all((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)):
             logging.debug("dialogue " + str((self.w.dialogue_queue.empty(), self._exiting, self._dialogue_is_fully_rendered)))
             self._exiting = True

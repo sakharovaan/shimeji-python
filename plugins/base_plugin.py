@@ -52,7 +52,7 @@ class ExpressionTag(Extension):
     def _render(self, component, *args, **kwargs):
         self.environment.plugin.w.face_queue.put(Expression(self.environment.plugin.w, component, 45000),
                                                  block=False, timeout=None)  # FIXME брать время из 2 опц аргумента тэга
-        self.environment.plugin.w.plugins['expression_plugin'].force_next()  # FIXME через диспетчер вызывать
+        self.environment.plugin.w.dispatch_signal('do_next_expression')
 
         logging.debug('Forcing expression: ' + component + ' for ' + str(45000))
         return ''
@@ -91,6 +91,9 @@ class BasePlugin:
 
     def on_start(self):  # когда все плагины инициализировались (после __init__), все плагины получают этот коллбек
         pass
+
+    def __getattr__(self, item):  # для многочисленных сигналов плагинов, чтобы не прописывать их тут
+        return lambda: None
 
 
 # just a dummy for not screwing plugin loading system

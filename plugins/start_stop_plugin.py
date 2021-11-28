@@ -8,10 +8,6 @@ class Plugin(BasePlugin):
         super(Plugin, self).__init__(window)
         self._exiting = False
 
-    def do_start(self):
-        for plugin in self.w.plugins.values():
-            plugin.on_start()
-
     def on_start(self):
         self.w.dialogue_queue.put(self.render_text('on_start_phrazes'), block=False, timeout=None)
 
@@ -19,8 +15,7 @@ class Plugin(BasePlugin):
         if not self._exiting:
             self.w.dialogue_queue.put(self.render_text('on_stop_phrazes'), block=False, timeout=None)
             self._exiting = True
-            for plugin in self.w.plugins.values():
-                plugin.on_stop()
+            self.w.dispatch_signal('on_stop')
 
     def on_stop(self):
         if all(pl.ready_to_exit for pl in self.w.plugins.values()):

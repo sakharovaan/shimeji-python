@@ -28,7 +28,7 @@ variables:
 
 templates:
   random_phrazes:
-    - "Привет, {{username}}! Ты пока не добавил ни одной толковой фразы, но я верю в тебя!"
+    - "{% expr forward_smile %} Привет, {{username}}! Ты пока не добавил ни одной толковой фразы, но я верю в тебя!"
   houly_dialogue:
     - "Сейчас {{ hours[hour] }}"
   on_start_phrazes:

@@ -23,12 +23,13 @@ class Plugin(BasePlugin):
         if self._elapsed_seconds > self._next_random:
             logging.debug("random dialogue activated!")
             self._elapsed_seconds = 0
-            self._say()
+            self.do_random_dialogue()
             self.after(3000, self.tick)
         else:
             self._elapsed_seconds += 3
             self.after(3000, self.tick)
         logging.debug("random dialogue " + str(self._elapsed_seconds))
 
-    def _say(self):
+    def do_random_dialogue(self):
         self.w.dialogue_queue.put(self.render_text('random_phrazes'), block=False, timeout=None)
+        self.w.dispatch_signal('do_next_dialogue')

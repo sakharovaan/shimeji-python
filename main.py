@@ -3,6 +3,7 @@ import queue
 import importlib
 import pkgutil
 import yaml
+from functools import partial
 
 import tkinter as tk
 from PIL import Image
@@ -17,17 +18,13 @@ class App(tk.Tk):
         self.withdraw()
 
 
-class FloatingWindow(tk.Toplevel):
+class ShimejiCore:
+    """
+    Класс, объединяющий в себе логику работы приложения и служебные функции
+    """
     def __init__(self, *args, **kwargs):
-        tk.Toplevel.__init__(self, *args, **kwargs)
         self.app = args[0]
-        self.overrideredirect(True)
-        self.geometry("+450+450")
-        self.wm_attributes("-topmost", True)
-        self.wm_attributes("-transparentcolor", "brown")
         self.image = ImageLoader('ghost.yaml')
-
-        self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
 
         self.config = dict(
             voice_enabled=tk.BooleanVar(),
@@ -44,6 +41,7 @@ class FloatingWindow(tk.Toplevel):
         self.dialogue_queue = queue.Queue()
         self.voice_queue = queue.Queue()
         self.face_queue = queue.LifoQueue()
+        self.plugins = {}
 
         self._plugins_modules = {
             name: importlib.import_module('.' + name, package='plugins')
@@ -55,9 +53,36 @@ class FloatingWindow(tk.Toplevel):
             name: plugin.Plugin(self) for name, plugin in self._plugins_modules.items()
         }
 
+    def start_core(self):
+        self.dispatch_signal('on_start')
+
+    def dispatch_signal(self, signal_name, *args, **kwargs):
+        for plugin in self.plugins.values():
+            getattr(plugin, signal_name)(*args, **kwargs)
+
+    @staticmethod
+    def RBGAImage(path):
+        return Image.open(path).convert("RGBA")
+
+
+class FloatingWindow(tk.Toplevel, ShimejiCore):
+    """
+    В этот класс лучше всего помещать только вещи, связанные с tk (ввод-вывод/графика/меню...)
+    """
+    def __init__(self, *args, **kwargs):
+        tk.Toplevel.__init__(self, *args, **kwargs)
+        ShimejiCore.__init__(self, *args, **kwargs)
+
+        self.overrideredirect(True)
+        self.geometry("+450+450")
+        self.wm_attributes("-topmost", True)
+        self.wm_attributes("-transparentcolor", "brown")
+
+        self.grip = tk.Canvas(self, width=450+450, height=1000, background="brown", bd=0, highlightthickness=0, relief='ridge')
+
         self.menu = tk.Menu(self, tearoff=0)
-        self.menu.add_command(label="Next expression", command=self.plugins['expression_plugin'].force_next)
-        self.menu.add_command(label="Show dialogue", command=self.plugins['random_dialogue_plugin']._say)
+        self.menu.add_command(label="Next expression", command=partial(self.dispatch_signal, 'do_next_expression'))
+        self.menu.add_command(label="Show dialogue", command=partial(self.dispatch_signal, 'do_random_dialogue'))
 
         config_menu = tk.Menu(self.menu)
         config_menu.add_checkbutton(label="Voice Enabled", onvalue=1, offvalue=0, variable=self.config['voice_enabled'])
@@ -71,11 +96,7 @@ class FloatingWindow(tk.Toplevel):
         self.grip.bind("<ButtonRelease-1>", self.left_release)
         self.grip.bind("<B1-Motion>", self.do_move)
 
-        self.plugins['start_stop_plugin'].do_start()
-
-    @staticmethod
-    def RBGAImage(path):
-        return Image.open(path).convert("RGBA")
+        self.start_core()
 
     def left_press(self, event):
         self.x = event.x
